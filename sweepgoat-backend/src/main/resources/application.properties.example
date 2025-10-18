@@ -1,0 +1,27 @@
+spring.application.name=sweepgoat-backend
+
+# Database Configuration (values come from .env file)
+spring.datasource.url=${env.DB_URL}
+spring.datasource.username=${env.DB_USERNAME}
+spring.datasource.password=${env.DB_PASSWORD}
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+# JPA/Hibernate Configuration
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
+
+# Server Configuration (value comes from .env file)
+server.port=${env.SERVER_PORT}
+
+# JWT Configuration (values come from .env file)
+jwt.secret=${env.JWT_SECRET}
+jwt.expiration=${env.JWT_EXPIRATION}
+
+# Logging Configuration
+logging.level.com.sweepgoat.backend=DEBUG
+logging.level.org.springframework.web=DEBUG
+logging.level.org.hibernate.SQL=DEBUG
+logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE

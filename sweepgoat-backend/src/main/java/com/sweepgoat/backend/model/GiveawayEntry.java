@@ -1,0 +1,50 @@
+package com.sweepgoat.backend.model;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(
+    name = "giveaway_entries",
+    uniqueConstraints = @UniqueConstraint(
+        name = "uk_user_giveaway",
+        columnNames = {"user_id", "giveaway_id"}
+    )
+)
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class GiveawayEntry {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "giveaway_id", nullable = false)
+    private Giveaway giveaway;
+
+    @Column(nullable = false)
+    private Integer points = 0;
+
+    @Column(name = "has_free_entry", nullable = false)
+    private Boolean hasFreeEntry = false;
+
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+}
