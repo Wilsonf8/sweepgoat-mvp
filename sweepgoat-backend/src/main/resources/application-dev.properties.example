@@ -1,10 +1,11 @@
-spring.application.name=sweepgoat-backend
+# Development Profile - Copy this to application-dev.properties
+# cp application-dev.properties.example application-dev.properties
+# Then edit with your local settings
 
-# Database Configuration (set these via environment variables or run ./run-local.sh)
-# See .env.example for required variables
-spring.datasource.url=${DB_URL}
-spring.datasource.username=${DB_USERNAME}
-spring.datasource.password=${DB_PASSWORD}
+# Database Configuration
+spring.datasource.url=jdbc:postgresql://localhost:5433/sweepgoat_db
+spring.datasource.username=your_username
+spring.datasource.password=your_password
 spring.datasource.driver-class-name=org.postgresql.Driver
 
 # JPA/Hibernate Configuration
@@ -14,12 +15,12 @@ spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.format_sql=true
 spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
 
-# Server Configuration (set via environment variables)
-server.port=${SERVER_PORT}
+# Server Configuration
+server.port=8081
 
-# JWT Configuration (set via environment variables)
-jwt.secret=${JWT_SECRET}
-jwt.expiration=${JWT_EXPIRATION}
+# JWT Configuration
+jwt.secret=your-local-dev-secret-key-min-32-characters-change-this
+jwt.expiration=86400000
 
 # Logging Configuration
 logging.level.com.sweepgoat.backend=DEBUG
