@@ -20,6 +20,8 @@ public interface GiveawayEntryRepository extends JpaRepository<GiveawayEntry, Lo
 
     boolean existsByUserIdAndGiveawayId(Long userId, Long giveawayId);
 
+    void deleteByGiveawayId(Long giveawayId);
+
     @Query("SELECT ge FROM GiveawayEntry ge WHERE ge.giveaway.id = :giveawayId ORDER BY ge.points DESC")
     List<GiveawayEntry> findByGiveawayIdOrderByPointsDesc(@Param("giveawayId") Long giveawayId);
 

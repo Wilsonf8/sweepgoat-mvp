@@ -14,4 +14,6 @@ public interface HostRepository extends JpaRepository<Host, Long> {
     boolean existsBySubdomain(String subdomain);
 
     Optional<Host> findByEmail(String email);
+
+    boolean existsByEmail(String email);
 }

@@ -53,9 +53,22 @@ public class User {
     @Column(name = "sms_opt_in", nullable = false)
     private Boolean smsOptIn = false; // Consent for SMS marketing
 
+    // Email verification fields
+    @Column(name = "email_verified", nullable = false)
+    private Boolean emailVerified = false; // Must verify email before login
+
+    @Column(name = "verification_code", length = 6)
+    private String verificationCode; // 6-digit code sent to email
+
+    @Column(name = "verification_code_expires_at")
+    private LocalDateTime verificationCodeExpiresAt; // Code expires after 24 hours
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "last_login_at")
+    private LocalDateTime lastLoginAt; // Tracks when user last logged in
 
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;

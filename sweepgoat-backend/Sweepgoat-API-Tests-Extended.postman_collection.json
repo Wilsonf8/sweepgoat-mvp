@@ -1,0 +1,964 @@
+{
+	"info": {
+		"_postman_id": "sweepgoat-api-tests-extended-v1",
+		"name": "Sweepgoat API Tests - Extended Multi-Tenant",
+		"description": "Extended test suite with multiple hosts, users, and giveaways",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8081",
+			"type": "string"
+		},
+		{
+			"key": "host1Subdomain",
+			"value": "acme",
+			"type": "string"
+		},
+		{
+			"key": "host1Email",
+			"value": "host@acme.com",
+			"type": "string"
+		},
+		{
+			"key": "host1Password",
+			"value": "SecurePass123!",
+			"type": "string"
+		},
+		{
+			"key": "host1Token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "host1Id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "host2Subdomain",
+			"value": "techco",
+			"type": "string"
+		},
+		{
+			"key": "host2Email",
+			"value": "host@techco.com",
+			"type": "string"
+		},
+		{
+			"key": "host2Password",
+			"value": "SecurePass456!",
+			"type": "string"
+		},
+		{
+			"key": "host2Token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "host2Id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "user1Email",
+			"value": "alice@test.com",
+			"type": "string"
+		},
+		{
+			"key": "user1Password",
+			"value": "UserPass123!",
+			"type": "string"
+		},
+		{
+			"key": "user1Token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "user1Id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "user2Email",
+			"value": "bob@test.com",
+			"type": "string"
+		},
+		{
+			"key": "user2Password",
+			"value": "UserPass456!",
+			"type": "string"
+		},
+		{
+			"key": "user2Token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "user2Id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "user3Email",
+			"value": "charlie@test.com",
+			"type": "string"
+		},
+		{
+			"key": "user3Password",
+			"value": "UserPass789!",
+			"type": "string"
+		},
+		{
+			"key": "user3Token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "user3Id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "giveaway1Id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "giveaway2Id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "giveaway3Id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "giveaway4Id",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "SETUP - Register Hosts",
+			"item": [
+				{
+					"name": "Register Host 1 (Acme)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+									"pm.test(\"Host 1 registered\", () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.token).to.exist;",
+									"    pm.expect(json.userType).to.equal('HOST');",
+									"    pm.collectionVariables.set(\"host1Token\", json.token);",
+									"    pm.collectionVariables.set(\"host1Id\", json.hostId);",
+									"    console.log(\"✅ Host 1 (Acme) registered - ID:\", json.hostId);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"subdomain\": \"{{host1Subdomain}}\",\n  \"companyName\": \"Acme Corporation\",\n  \"email\": \"{{host1Email}}\",\n  \"password\": \"{{host1Password}}\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/auth/host/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "host", "register"]}
+					}
+				},
+				{
+					"name": "Register Host 2 (TechCo)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+									"pm.test(\"Host 2 registered\", () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.token).to.exist;",
+									"    pm.expect(json.userType).to.equal('HOST');",
+									"    pm.collectionVariables.set(\"host2Token\", json.token);",
+									"    pm.collectionVariables.set(\"host2Id\", json.hostId);",
+									"    console.log(\"✅ Host 2 (TechCo) registered - ID:\", json.hostId);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"subdomain\": \"{{host2Subdomain}}\",\n  \"companyName\": \"TechCo Industries\",\n  \"email\": \"{{host2Email}}\",\n  \"password\": \"{{host2Password}}\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/auth/host/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "host", "register"]}
+					}
+				}
+			]
+		},
+		{
+			"name": "SETUP - Register Users",
+			"item": [
+				{
+					"name": "Register User 1 (Alice) on Acme",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+									"pm.test(\"User 1 registered\", () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.message).to.include('success');",
+									"    pm.collectionVariables.set(\"user1Id\", json.userId);",
+									"    console.log(\"✅ User 1 (Alice) registered on Acme\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "X-Subdomain", "value": "{{host1Subdomain}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{user1Email}}\",\n  \"password\": \"{{user1Password}}\",\n  \"username\": \"alice\",\n  \"firstName\": \"Alice\",\n  \"lastName\": \"Johnson\",\n  \"phoneNumber\": \"+1-555-0101\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/auth/user/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "user", "register"]}
+					}
+				},
+				{
+					"name": "Verify User 1 Email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+									"console.log(\"✅ User 1 email verified\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "X-Subdomain", "value": "{{host1Subdomain}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{user1Email}}\",\n  \"code\": \"000000\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/auth/user/verify-email", "host": ["{{baseUrl}}"], "path": ["api", "auth", "user", "verify-email"]}
+					}
+				},
+				{
+					"name": "Login User 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+									"pm.test(\"User 1 logged in\", () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.token).to.exist;",
+									"    pm.collectionVariables.set(\"user1Token\", json.token);",
+									"    console.log(\"✅ User 1 logged in\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "X-Subdomain", "value": "{{host1Subdomain}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{user1Email}}\",\n  \"password\": \"{{user1Password}}\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/auth/user/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "user", "login"]}
+					}
+				},
+				{
+					"name": "Register User 2 (Bob) on Acme",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+									"pm.test(\"User 2 registered\", () => {",
+									"    const json = pm.response.json();",
+									"    pm.collectionVariables.set(\"user2Id\", json.userId);",
+									"    console.log(\"✅ User 2 (Bob) registered on Acme\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "X-Subdomain", "value": "{{host1Subdomain}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{user2Email}}\",\n  \"password\": \"{{user2Password}}\",\n  \"username\": \"bob\",\n  \"firstName\": \"Bob\",\n  \"lastName\": \"Smith\",\n  \"phoneNumber\": \"+1-555-0102\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/auth/user/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "user", "register"]}
+					}
+				},
+				{
+					"name": "Verify User 2 Email",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "X-Subdomain", "value": "{{host1Subdomain}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{user2Email}}\",\n  \"code\": \"000000\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/auth/user/verify-email", "host": ["{{baseUrl}}"], "path": ["api", "auth", "user", "verify-email"]}
+					}
+				},
+				{
+					"name": "Login User 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"User 2 logged in\", () => {",
+									"    const json = pm.response.json();",
+									"    pm.collectionVariables.set(\"user2Token\", json.token);",
+									"    console.log(\"✅ User 2 logged in\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "X-Subdomain", "value": "{{host1Subdomain}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{user2Email}}\",\n  \"password\": \"{{user2Password}}\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/auth/user/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "user", "login"]}
+					}
+				},
+				{
+					"name": "Register User 3 (Charlie) on TechCo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"User 3 registered\", () => {",
+									"    const json = pm.response.json();",
+									"    pm.collectionVariables.set(\"user3Id\", json.userId);",
+									"    console.log(\"✅ User 3 (Charlie) registered on TechCo\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "X-Subdomain", "value": "{{host2Subdomain}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{user3Email}}\",\n  \"password\": \"{{user3Password}}\",\n  \"username\": \"charlie\",\n  \"firstName\": \"Charlie\",\n  \"lastName\": \"Brown\",\n  \"phoneNumber\": \"+1-555-0103\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/auth/user/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "user", "register"]}
+					}
+				},
+				{
+					"name": "Verify User 3 Email",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "X-Subdomain", "value": "{{host2Subdomain}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{user3Email}}\",\n  \"code\": \"000000\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/auth/user/verify-email", "host": ["{{baseUrl}}"], "path": ["api", "auth", "user", "verify-email"]}
+					}
+				},
+				{
+					"name": "Login User 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"User 3 logged in\", () => {",
+									"    const json = pm.response.json();",
+									"    pm.collectionVariables.set(\"user3Token\", json.token);",
+									"    console.log(\"✅ User 3 logged in\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "X-Subdomain", "value": "{{host2Subdomain}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{user3Email}}\",\n  \"password\": \"{{user3Password}}\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/auth/user/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "user", "login"]}
+					}
+				}
+			]
+		},
+		{
+			"name": "SETUP - Create Giveaways",
+			"item": [
+				{
+					"name": "Host 1 - Create Giveaway 1 (iPhone)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Giveaway 1 created\", () => {",
+									"    const json = pm.response.json();",
+									"    pm.collectionVariables.set(\"giveaway1Id\", json.id);",
+									"    console.log(\"✅ Giveaway 1 created - ID:\", json.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{host1Token}}"},
+							{"key": "X-Subdomain", "value": "{{host1Subdomain}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Win an iPhone 15 Pro\",\n  \"description\": \"Enter for a chance to win the latest iPhone!\",\n  \"imageUrl\": \"https://example.com/iphone.jpg\",\n  \"startDate\": \"2025-10-24T00:00:00\",\n  \"endDate\": \"2025-12-31T23:59:59\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/host/giveaways", "host": ["{{baseUrl}}"], "path": ["api", "host", "giveaways"]}
+					}
+				},
+				{
+					"name": "Host 1 - Create Giveaway 2 (MacBook)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Giveaway 2 created\", () => {",
+									"    const json = pm.response.json();",
+									"    pm.collectionVariables.set(\"giveaway2Id\", json.id);",
+									"    console.log(\"✅ Giveaway 2 created - ID:\", json.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{host1Token}}"},
+							{"key": "X-Subdomain", "value": "{{host1Subdomain}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Win a MacBook Pro\",\n  \"description\": \"Grand prize: Latest MacBook Pro 16-inch!\",\n  \"imageUrl\": \"https://example.com/macbook.jpg\",\n  \"startDate\": \"2025-10-24T00:00:00\",\n  \"endDate\": \"2025-11-30T23:59:59\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/host/giveaways", "host": ["{{baseUrl}}"], "path": ["api", "host", "giveaways"]}
+					}
+				},
+				{
+					"name": "Host 2 - Create Giveaway 3 (PS5)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Giveaway 3 created\", () => {",
+									"    const json = pm.response.json();",
+									"    pm.collectionVariables.set(\"giveaway3Id\", json.id);",
+									"    console.log(\"✅ Giveaway 3 created - ID:\", json.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{host2Token}}"},
+							{"key": "X-Subdomain", "value": "{{host2Subdomain}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Win a PlayStation 5\",\n  \"description\": \"Gaming giveaway - PS5 console bundle!\",\n  \"imageUrl\": \"https://example.com/ps5.jpg\",\n  \"startDate\": \"2025-10-24T00:00:00\",\n  \"endDate\": \"2025-12-15T23:59:59\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/host/giveaways", "host": ["{{baseUrl}}"], "path": ["api", "host", "giveaways"]}
+					}
+				},
+				{
+					"name": "Host 2 - Create Giveaway 4 (Xbox)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Giveaway 4 created\", () => {",
+									"    const json = pm.response.json();",
+									"    pm.collectionVariables.set(\"giveaway4Id\", json.id);",
+									"    console.log(\"✅ Giveaway 4 created - ID:\", json.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{host2Token}}"},
+							{"key": "X-Subdomain", "value": "{{host2Subdomain}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Win an Xbox Series X\",\n  \"description\": \"Ultimate gaming prize!\",\n  \"imageUrl\": \"https://example.com/xbox.jpg\",\n  \"startDate\": \"2025-10-24T00:00:00\",\n  \"endDate\": \"2025-12-20T23:59:59\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/host/giveaways", "host": ["{{baseUrl}}"], "path": ["api", "host", "giveaways"]}
+					}
+				}
+			]
+		},
+		{
+			"name": "TEST - Multiple User Entries",
+			"item": [
+				{
+					"name": "User 1 - Enter Giveaway 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"User 1 entered giveaway 1\", () => {",
+									"    pm.response.to.have.status(200);",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.success).to.be.true;",
+									"    console.log(\"✅ Alice entered iPhone giveaway\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{user1Token}}"},
+							{"key": "X-Subdomain", "value": "{{host1Subdomain}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"points\": 1, \"isFreeEntry\": true}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/user/giveaways/{{giveaway1Id}}/enter", "host": ["{{baseUrl}}"], "path": ["api", "user", "giveaways", "{{giveaway1Id}}", "enter"]}
+					}
+				},
+				{
+					"name": "User 1 - Enter Giveaway 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"User 1 entered giveaway 2\", () => {",
+									"    pm.response.to.have.status(200);",
+									"    console.log(\"✅ Alice entered MacBook giveaway\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{user1Token}}"},
+							{"key": "X-Subdomain", "value": "{{host1Subdomain}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"points\": 1, \"isFreeEntry\": true}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/user/giveaways/{{giveaway2Id}}/enter", "host": ["{{baseUrl}}"], "path": ["api", "user", "giveaways", "{{giveaway2Id}}", "enter"]}
+					}
+				},
+				{
+					"name": "User 2 - Enter Giveaway 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"User 2 entered giveaway 1\", () => {",
+									"    pm.response.to.have.status(200);",
+									"    console.log(\"✅ Bob entered iPhone giveaway\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{user2Token}}"},
+							{"key": "X-Subdomain", "value": "{{host1Subdomain}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"points\": 1, \"isFreeEntry\": true}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/user/giveaways/{{giveaway1Id}}/enter", "host": ["{{baseUrl}}"], "path": ["api", "user", "giveaways", "{{giveaway1Id}}", "enter"]}
+					}
+				},
+				{
+					"name": "User 2 - Enter Giveaway 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"User 2 entered giveaway 2\", () => {",
+									"    pm.response.to.have.status(200);",
+									"    console.log(\"✅ Bob entered MacBook giveaway\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{user2Token}}"},
+							{"key": "X-Subdomain", "value": "{{host1Subdomain}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"points\": 1, \"isFreeEntry\": true}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/user/giveaways/{{giveaway2Id}}/enter", "host": ["{{baseUrl}}"], "path": ["api", "user", "giveaways", "{{giveaway2Id}}", "enter"]}
+					}
+				},
+				{
+					"name": "User 3 - Enter Giveaway 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"User 3 entered giveaway 3\", () => {",
+									"    pm.response.to.have.status(200);",
+									"    console.log(\"✅ Charlie entered PS5 giveaway\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{user3Token}}"},
+							{"key": "X-Subdomain", "value": "{{host2Subdomain}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"points\": 1, \"isFreeEntry\": true}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/user/giveaways/{{giveaway3Id}}/enter", "host": ["{{baseUrl}}"], "path": ["api", "user", "giveaways", "{{giveaway3Id}}", "enter"]}
+					}
+				},
+				{
+					"name": "User 3 - Enter Giveaway 4",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"User 3 entered giveaway 4\", () => {",
+									"    pm.response.to.have.status(200);",
+									"    console.log(\"✅ Charlie entered Xbox giveaway\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{user3Token}}"},
+							{"key": "X-Subdomain", "value": "{{host2Subdomain}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"points\": 1, \"isFreeEntry\": true}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/user/giveaways/{{giveaway4Id}}/enter", "host": ["{{baseUrl}}"], "path": ["api", "user", "giveaways", "{{giveaway4Id}}", "enter"]}
+					}
+				}
+			]
+		},
+		{
+			"name": "TEST - View Leaderboards",
+			"item": [
+				{
+					"name": "Host 1 - View Giveaway 1 Leaderboard",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Leaderboard has 2 entries\", () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.length).to.equal(2);",
+									"    console.log(\"✅ Giveaway 1 has\", json.length, \"entries\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{host1Token}}"},
+							{"key": "X-Subdomain", "value": "{{host1Subdomain}}"}
+						],
+						"url": {"raw": "{{baseUrl}}/api/host/giveaways/{{giveaway1Id}}/entries", "host": ["{{baseUrl}}"], "path": ["api", "host", "giveaways", "{{giveaway1Id}}", "entries"]}
+					}
+				},
+				{
+					"name": "Host 1 - View Giveaway 2 Leaderboard",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Leaderboard has 2 entries\", () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.length).to.equal(2);",
+									"    console.log(\"✅ Giveaway 2 has\", json.length, \"entries\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{host1Token}}"},
+							{"key": "X-Subdomain", "value": "{{host1Subdomain}}"}
+						],
+						"url": {"raw": "{{baseUrl}}/api/host/giveaways/{{giveaway2Id}}/entries", "host": ["{{baseUrl}}"], "path": ["api", "host", "giveaways", "{{giveaway2Id}}", "entries"]}
+					}
+				},
+				{
+					"name": "Host 1 - View All Users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Host 1 has 2 users\", () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.length).to.equal(2);",
+									"    console.log(\"✅ Acme has\", json.length, \"registered users\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{host1Token}}"},
+							{"key": "X-Subdomain", "value": "{{host1Subdomain}}"}
+						],
+						"url": {"raw": "{{baseUrl}}/api/host/users", "host": ["{{baseUrl}}"], "path": ["api", "host", "users"]}
+					}
+				}
+			]
+		},
+		{
+			"name": "CLEANUP - Delete Everything",
+			"item": [
+				{
+					"name": "Host 1 - Delete Giveaway 1",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{host1Token}}"},
+							{"key": "X-Subdomain", "value": "{{host1Subdomain}}"}
+						],
+						"url": {"raw": "{{baseUrl}}/api/host/giveaways/{{giveaway1Id}}", "host": ["{{baseUrl}}"], "path": ["api", "host", "giveaways", "{{giveaway1Id}}"]}
+					}
+				},
+				{
+					"name": "Host 1 - Delete Giveaway 2",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{host1Token}}"},
+							{"key": "X-Subdomain", "value": "{{host1Subdomain}}"}
+						],
+						"url": {"raw": "{{baseUrl}}/api/host/giveaways/{{giveaway2Id}}", "host": ["{{baseUrl}}"], "path": ["api", "host", "giveaways", "{{giveaway2Id}}"]}
+					}
+				},
+				{
+					"name": "Host 2 - Delete Giveaway 3",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{host2Token}}"},
+							{"key": "X-Subdomain", "value": "{{host2Subdomain}}"}
+						],
+						"url": {"raw": "{{baseUrl}}/api/host/giveaways/{{giveaway3Id}}", "host": ["{{baseUrl}}"], "path": ["api", "host", "giveaways", "{{giveaway3Id}}"]}
+					}
+				},
+				{
+					"name": "Host 2 - Delete Giveaway 4",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{host2Token}}"},
+							{"key": "X-Subdomain", "value": "{{host2Subdomain}}"}
+						],
+						"url": {"raw": "{{baseUrl}}/api/host/giveaways/{{giveaway4Id}}", "host": ["{{baseUrl}}"], "path": ["api", "host", "giveaways", "{{giveaway4Id}}"]}
+					}
+				},
+				{
+					"name": "User 1 - Delete Account",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{user1Token}}"},
+							{"key": "X-Subdomain", "value": "{{host1Subdomain}}"}
+						],
+						"url": {"raw": "{{baseUrl}}/api/user/account", "host": ["{{baseUrl}}"], "path": ["api", "user", "account"]}
+					}
+				},
+				{
+					"name": "User 2 - Delete Account",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{user2Token}}"},
+							{"key": "X-Subdomain", "value": "{{host1Subdomain}}"}
+						],
+						"url": {"raw": "{{baseUrl}}/api/user/account", "host": ["{{baseUrl}}"], "path": ["api", "user", "account"]}
+					}
+				},
+				{
+					"name": "User 3 - Delete Account",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{user3Token}}"},
+							{"key": "X-Subdomain", "value": "{{host2Subdomain}}"}
+						],
+						"url": {"raw": "{{baseUrl}}/api/user/account", "host": ["{{baseUrl}}"], "path": ["api", "user", "account"]}
+					}
+				},
+				{
+					"name": "Host 1 - Delete Account",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{host1Token}}"},
+							{"key": "X-Subdomain", "value": "{{host1Subdomain}}"}
+						],
+						"url": {"raw": "{{baseUrl}}/api/host/account", "host": ["{{baseUrl}}"], "path": ["api", "host", "account"]}
+					}
+				},
+				{
+					"name": "Host 2 - Delete Account",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{host2Token}}"},
+							{"key": "X-Subdomain", "value": "{{host2Subdomain}}"}
+						],
+						"url": {"raw": "{{baseUrl}}/api/host/account", "host": ["{{baseUrl}}"], "path": ["api", "host", "account"]}
+					}
+				}
+			]
+		}
+	]
+}

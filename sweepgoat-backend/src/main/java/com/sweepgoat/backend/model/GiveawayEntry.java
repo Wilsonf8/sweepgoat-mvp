@@ -37,8 +37,8 @@ public class GiveawayEntry {
     @Column(nullable = false)
     private Integer points = 0;
 
-    @Column(name = "has_free_entry", nullable = false)
-    private Boolean hasFreeEntry = false;
+    @Column(name = "free_entry_claimed", nullable = false)
+    private Boolean freeEntryClaimed = false; // Tracks if user has used their one-time free entry
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

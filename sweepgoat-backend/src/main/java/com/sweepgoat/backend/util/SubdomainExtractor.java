@@ -75,4 +75,43 @@ public class SubdomainExtractor {
         }
         return subdomain + "." + baseDomain;
     }
+
+    /**
+     * Check if request is from main domain (sweepgoat.com or localhost without subdomain)
+     * Used to restrict host registration to main domain only
+     */
+    public boolean isMainDomain(HttpServletRequest request) {
+        String host = request.getHeader("Host");
+
+        if (host == null || host.isEmpty()) {
+            return false;
+        }
+
+        // Remove port if present
+        if (host.contains(":")) {
+            host = host.substring(0, host.indexOf(":"));
+        }
+
+        // For local development - check X-Subdomain header
+        if (host.equals("localhost") || host.equals("127.0.0.1")) {
+            String subdomainHeader = request.getHeader("X-Subdomain");
+            // Main domain if no X-Subdomain header or it's empty/null
+            return subdomainHeader == null || subdomainHeader.isEmpty();
+        }
+
+        // Split by dots
+        String[] parts = host.split("\\\\.");
+
+        // sweepgoat.com (2 parts) = main domain
+        // host1.sweepgoat.com (3+ parts) = subdomain
+        return parts.length == 2;
+    }
+
+    /**
+     * Check if request is from a subdomain (host1.sweepgoat.com or localhost with X-Subdomain header)
+     * Used to restrict user registration to subdomains only
+     */
+    public boolean isSubdomain(HttpServletRequest request) {
+        return hasSubdomain(request);
+    }
 }

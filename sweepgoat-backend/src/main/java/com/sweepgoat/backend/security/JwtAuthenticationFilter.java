@@ -54,6 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (jwtUtil.validateToken(jwt)) {
 
                 // Extract additional info from token
+                Long userId = jwtUtil.extractUserId(jwt); // Only present for USER tokens
                 Long hostId = jwtUtil.extractHostId(jwt);
                 String userType = jwtUtil.extractUserType(jwt);
 
@@ -74,7 +75,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // Set additional details (hostId, subdomain, etc.)
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                // Store hostId in request attributes for easy access in controllers
+                // Store info in request attributes for easy access in controllers
+                if (userId != null) {
+                    request.setAttribute("userId", userId);
+                }
                 request.setAttribute("hostId", hostId);
                 request.setAttribute("subdomain", subdomain);
                 request.setAttribute("userType", userType);
@@ -82,7 +86,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // Set authentication in security context
                 SecurityContextHolder.getContext().setAuthentication(authToken);
 
-                logger.debug("JWT validated for user: " + username + ", hostId: " + hostId + ", subdomain: " + subdomain);
+                logger.debug("JWT validated for user: " + username + ", userId: " + userId + ", hostId: " + hostId + ", subdomain: " + subdomain);
             }
         }
 

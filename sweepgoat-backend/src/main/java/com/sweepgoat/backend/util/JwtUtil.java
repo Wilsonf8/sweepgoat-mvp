@@ -33,6 +33,11 @@ public class JwtUtil {
         return extractClaim(token, Claims::getSubject);
     }
 
+    // Extract user ID from token (only present for USER tokens, not HOST tokens)
+    public Long extractUserId(String token) {
+        return extractClaim(token, claims -> claims.get("userId", Long.class));
+    }
+
     // Extract host ID from token
     public Long extractHostId(String token) {
         return extractClaim(token, claims -> claims.get("hostId", Long.class));

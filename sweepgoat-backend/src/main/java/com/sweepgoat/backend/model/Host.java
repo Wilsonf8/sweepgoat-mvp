@@ -17,6 +17,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Host {
+    // NOTE: Currently one host = one subdomain.
+    // Future enhancement: Allow multiple subdomains per host by creating a separate Subdomain entity
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
