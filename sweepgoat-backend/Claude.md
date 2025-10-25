@@ -1,6 +1,6 @@
 # Sweepgoat Backend - Claude Documentation
 
-**Last Updated**: 2025-10-23
+**Last Updated**: 2025-10-24
 **Version**: 1.0.0 MVP
 **Stack**: Spring Boot 3.5.6, Java 21, PostgreSQL 16.10
 
@@ -76,7 +76,7 @@ GET /api/host/giveaways/{id}/stats # Get giveaway statistics
 GET /api/host/giveaways/{id}/entries  # View leaderboard
 POST /api/host/giveaways           # Create new giveaway
 DELETE /api/host/giveaways/{id}    # Delete giveaway
-GET /api/host/users                # View all registered users
+GET /api/host/users                # View all registered users (supports sorting)
 DELETE /api/host/account           # Delete host account
 ```
 
@@ -228,9 +228,41 @@ if (pm.response.code === 200) {
 }
 ```
 
-## Recent Changes (2025-10-23)
+## Recent Changes
 
-### User Management Features
+### 2025-10-24 - CRM User Sorting
+1. **CRM User Sorting Feature**
+   - Enhanced `GET /api/host/users` endpoint with optional query parameters
+   - Query params: `sortBy` and `sortOrder`
+   - Supported sort fields:
+     - `lastLoginAt` - Sort by last login timestamp (identify inactive users)
+     - `createdAt` - Sort by registration date (target new users)
+     - `email` - Sort alphabetically by email
+     - `firstName` - Sort alphabetically by first name
+     - `lastName` - Sort alphabetically by last name
+   - Sort order: `asc` (ascending) or `desc` (descending)
+   - Default sorting: `createdAt desc` (newest first)
+   - Backward compatible: No parameters = default sorting
+   - Example usage:
+     - `/api/host/users?sortBy=lastLoginAt&sortOrder=desc`
+     - `/api/host/users?sortBy=email&sortOrder=asc`
+   - **Files modified**:
+     - `src/main/java/com/sweepgoat/backend/controller/HostUserController.java`
+     - `src/main/java/com/sweepgoat/backend/service/UserAuthService.java`
+     - `src/main/java/com/sweepgoat/backend/repository/UserRepository.java`
+
+2. **Development Email Verification**
+   - Added `app.auto-verify-emails` property in dev profile
+   - When enabled, automatically verifies user emails without requiring verification codes
+   - Production mode still requires email verification
+   - **File**: `src/main/resources/application-dev.properties`
+
+3. **User Phone Number Requirement**
+   - Phone number now required during user registration
+   - Added `@NotBlank` validation to `UserRegisterRequest.phoneNumber`
+   - **File**: `src/main/java/com/sweepgoat/backend/dto/UserRegisterRequest.java`
+
+### 2025-10-23 - User Management Features
 1. **Last Login Tracking**
    - Added `lastLoginAt` field to User entity
    - Automatically updated on successful login
@@ -284,12 +316,13 @@ private ResponseDTO mapToDTO(Entity entity) {
 ## Future Considerations
 
 - Add pagination to list endpoints (users, giveaways, entries)
-- Add sorting options for leaderboards
+- Add sorting options for leaderboards and giveaway lists
 - Add filtering by date ranges
 - Add winner selection functionality
 - Add email notifications for giveaway events
 - Add rate limiting for entry submissions
 - Add bulk operations for hosts
+- Add user search/filtering in CRM (by email, name, verification status, etc.)
 
 ## Files to Reference
 

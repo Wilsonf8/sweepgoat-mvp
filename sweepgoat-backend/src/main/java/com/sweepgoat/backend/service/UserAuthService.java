@@ -240,9 +240,50 @@ public class UserAuthService {
 
     /**
      * Get all users for a host (HOST auth required)
+     * Supports optional sorting by field and order
      */
-    public java.util.List<UserListResponse> getUsersByHostId(Long hostId) {
-        java.util.List<User> users = userRepository.findByHostId(hostId);
+    public java.util.List<UserListResponse> getUsersByHostId(Long hostId, String sortBy, String sortOrder) {
+        // Determine sort direction
+        org.springframework.data.domain.Sort.Direction direction =
+            "asc".equalsIgnoreCase(sortOrder) ?
+            org.springframework.data.domain.Sort.Direction.ASC :
+            org.springframework.data.domain.Sort.Direction.DESC;
+
+        // Determine sort field (with validation)
+        String sortField;
+        if (sortBy != null && !sortBy.isEmpty()) {
+            // Validate sortBy parameter
+            switch (sortBy.toLowerCase()) {
+                case "lastloginat":
+                    sortField = "lastLoginAt";
+                    break;
+                case "createdat":
+                    sortField = "createdAt";
+                    break;
+                case "email":
+                    sortField = "email";
+                    break;
+                case "firstname":
+                    sortField = "firstName";
+                    break;
+                case "lastname":
+                    sortField = "lastName";
+                    break;
+                default:
+                    // Default to createdAt if invalid field provided
+                    logger.warn("Invalid sortBy field '{}', defaulting to createdAt", sortBy);
+                    sortField = "createdAt";
+            }
+        } else {
+            // Default sort by createdAt descending (newest first)
+            sortField = "createdAt";
+        }
+
+        // Create sort object
+        org.springframework.data.domain.Sort sort = org.springframework.data.domain.Sort.by(direction, sortField);
+
+        // Fetch sorted users
+        java.util.List<User> users = userRepository.findByHostId(hostId, sort);
 
         return users.stream()
             .map(user -> new UserListResponse(

@@ -51,7 +51,7 @@ public class RootController {
         hostEndpoints.put("View Leaderboard", "GET /api/host/giveaways/{id}/entries");
         hostEndpoints.put("Create Giveaway", "POST /api/host/giveaways");
         hostEndpoints.put("Delete Giveaway", "DELETE /api/host/giveaways/{id}");
-        hostEndpoints.put("View All Users", "GET /api/host/users");
+        hostEndpoints.put("View All Users", "GET /api/host/users?sortBy={field}&sortOrder={asc|desc}");
         hostEndpoints.put("Delete My Account", "DELETE /api/host/account");
         endpoints.put("host", hostEndpoints);
 
@@ -67,6 +67,7 @@ public class RootController {
         Map<String, String> notes = new HashMap<>();
         notes.put("subdomain", "Include X-Subdomain header for subdomain-specific requests");
         notes.put("authentication", "Include Authorization: Bearer {token} header for protected endpoints");
+        notes.put("user_sorting", "GET /api/host/users supports sorting by: lastLoginAt, createdAt, email, firstName, lastName (default: createdAt desc)");
         response.put("notes", notes);
 
         return response;

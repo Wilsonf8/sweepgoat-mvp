@@ -1,6 +1,7 @@
 package com.sweepgoat.backend.repository;
 
 import com.sweepgoat.backend.model.User;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -31,6 +32,8 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findByHostId(Long hostId);
+
+    List<User> findByHostId(Long hostId, Sort sort);
 
     Optional<User> findByEmailAndHostId(String email, Long hostId);
 
