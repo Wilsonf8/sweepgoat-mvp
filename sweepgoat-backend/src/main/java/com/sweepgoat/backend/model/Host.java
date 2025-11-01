@@ -48,6 +48,16 @@ public class Host {
     @Column(name = "primary_color")
     private String primaryColor; // Hex color code (e.g., "#FF5733") for brand color
 
+    // Email verification fields
+    @Column(name = "email_verified", nullable = false)
+    private Boolean emailVerified = false; // Must verify email before accessing subdomain
+
+    @Column(name = "verification_code", length = 6)
+    private String verificationCode; // 6-digit code sent to email
+
+    @Column(name = "verification_code_expires_at")
+    private LocalDateTime verificationCodeExpiresAt; // Code expires after 24 hours
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

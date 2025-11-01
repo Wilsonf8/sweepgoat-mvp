@@ -32,11 +32,16 @@ public class GiveawayEntryService {
     private UserRepository userRepository;
 
     /**
-     * Enter user into giveaway for free (1 point)
-     * This is the MVP "Enter for Free" button functionality
+     * Claim one-time free entry (1 point)
+     *
+     * Business Rules:
+     * - Always worth exactly 1 point
+     * - Can only be claimed once per user per giveaway
+     * - Sets freeEntryClaimed = true
+     * - If user already has an entry for this giveaway, checks if free entry was already claimed
      */
     @Transactional
-    public GiveawayEntryResponse enterGiveawayForFree(Long giveawayId, Long userId) {
+    public GiveawayEntryResponse claimFreeEntry(Long giveawayId, Long userId) {
         // Find user first
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new ResourceNotFoundException("User not found"));
@@ -73,8 +78,28 @@ public class GiveawayEntryService {
             if (existingEntry.getFreeEntryClaimed()) {
                 throw new GiveawayEntryException("You have already claimed your free entry for this giveaway");
             }
-            // Future: This is where paid entry logic would go
-            throw new GiveawayEntryException("You have already entered this giveaway");
+
+            // User has an entry but hasn't claimed free entry yet (they used regular entries first)
+            // Add 1 point and mark free entry as claimed
+            existingEntry.setPoints(existingEntry.getPoints() + 1);
+            existingEntry.setFreeEntryClaimed(true);
+            existingEntry = giveawayEntryRepository.save(existingEntry);
+
+            // Build response
+            GiveawayEntryResponse.EntryDetails details = new GiveawayEntryResponse.EntryDetails(
+                existingEntry.getId(),
+                existingEntry.getPoints(),
+                existingEntry.getFreeEntryClaimed(),
+                giveaway.getId(),
+                giveaway.getTitle(),
+                existingEntry.getCreatedAt()
+            );
+
+            return new GiveawayEntryResponse(
+                true,
+                "Free entry claimed! Added 1 point to your existing entry.",
+                details
+            );
         }
 
         // Create new entry with 1 point and mark free entry as claimed
@@ -99,6 +124,101 @@ public class GiveawayEntryService {
         return new GiveawayEntryResponse(
             true,
             "Successfully entered giveaway!",
+            details
+        );
+    }
+
+    /**
+     * Add entries with variable points (paid entries)
+     *
+     * Business Rules:
+     * - Variable points based on request (must be > 0)
+     * - Can be used multiple times
+     * - Does NOT affect freeEntryClaimed status
+     * - Future: Will require payment/points purchase validation
+     */
+    @Transactional
+    public GiveawayEntryResponse addRegularEntries(Long giveawayId, Long userId, Integer pointsToAdd) {
+        // Validate points
+        if (pointsToAdd == null || pointsToAdd <= 0) {
+            throw new GiveawayEntryException("Points to add must be greater than 0");
+        }
+
+        // Find user first
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        // Get hostId from user
+        Long hostId = user.getHost().getId();
+
+        // Find giveaway
+        Giveaway giveaway = giveawayRepository.findById(giveawayId)
+            .orElseThrow(() -> new ResourceNotFoundException("Giveaway not found"));
+
+        // Verify giveaway belongs to the same host as the user
+        if (!giveaway.getHost().getId().equals(hostId)) {
+            throw new GiveawayEntryException("This giveaway does not belong to your subdomain");
+        }
+
+        // Verify giveaway is active
+        if (!"ACTIVE".equals(giveaway.getStatus())) {
+            throw new GiveawayEntryException("This giveaway is not active");
+        }
+
+        // Verify giveaway hasn't ended
+        if (giveaway.getEndDate().isBefore(LocalDateTime.now())) {
+            throw new GiveawayEntryException("This giveaway has ended");
+        }
+
+        // Check if user has already entered this giveaway
+        GiveawayEntry existingEntry = giveawayEntryRepository
+            .findByUserIdAndGiveawayId(userId, giveawayId)
+            .orElse(null);
+
+        if (existingEntry != null) {
+            // User already has an entry - add points to it
+            existingEntry.setPoints(existingEntry.getPoints() + pointsToAdd);
+            existingEntry = giveawayEntryRepository.save(existingEntry);
+
+            // Build response
+            GiveawayEntryResponse.EntryDetails details = new GiveawayEntryResponse.EntryDetails(
+                existingEntry.getId(),
+                existingEntry.getPoints(),
+                existingEntry.getFreeEntryClaimed(),
+                giveaway.getId(),
+                giveaway.getTitle(),
+                existingEntry.getCreatedAt()
+            );
+
+            return new GiveawayEntryResponse(
+                true,
+                "Added " + pointsToAdd + " points to your entry!",
+                details
+            );
+        }
+
+        // Create new entry with specified points
+        GiveawayEntry entry = new GiveawayEntry();
+        entry.setUser(user);
+        entry.setGiveaway(giveaway);
+        entry.setPoints(pointsToAdd);
+        entry.setFreeEntryClaimed(false); // This is NOT a free entry
+
+        entry = giveawayEntryRepository.save(entry);
+
+        // Build response
+        GiveawayEntryResponse.EntryDetails details = new GiveawayEntryResponse.EntryDetails(
+            entry.getId(),
+            entry.getPoints(),
+            entry.getFreeEntryClaimed(),
+            giveaway.getId(),
+            giveaway.getTitle(),
+            entry.getCreatedAt()
+        );
+
+        return new GiveawayEntryResponse(
+            true,
+            "Successfully entered giveaway with " + pointsToAdd + " points!",
             details
         );
     }

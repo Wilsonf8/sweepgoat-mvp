@@ -76,7 +76,9 @@ GET /api/host/giveaways/{id}/stats # Get giveaway statistics
 GET /api/host/giveaways/{id}/entries  # View leaderboard
 POST /api/host/giveaways           # Create new giveaway
 DELETE /api/host/giveaways/{id}    # Delete giveaway
-GET /api/host/users                # View all registered users (supports sorting)
+GET /api/host/users?page={page}&size={size}&sortBy={field}&sortOrder={asc|desc}  # View all registered users (paginated, filtered, sorted)
+GET /api/host/branding             # Get current branding settings (logo, color)
+PATCH /api/host/branding           # Update branding (logo and/or color)
 DELETE /api/host/account           # Delete host account
 ```
 
@@ -228,7 +230,160 @@ if (pm.response.code === 200) {
 }
 ```
 
+## Pagination
+
+The API supports pagination for large datasets. Currently implemented for:
+- **GET /api/host/users** - User list with pagination
+
+### Pagination Parameters
+- `page` - Page number (0-indexed, default: 0)
+- `size` - Items per page (default: 50)
+
+### Pagination Response Format
+```json
+{
+  "data": [...],              // Array of items for current page
+  "currentPage": 0,           // Current page number (0-indexed)
+  "totalPages": 5,            // Total number of pages
+  "totalItems": 237,          // Total number of items across all pages
+  "pageSize": 50,             // Number of items per page
+  "hasNext": true,            // Whether there's a next page
+  "hasPrevious": false        // Whether there's a previous page
+}
+```
+
+### Example Usage
+```
+# Get first page (50 users)
+GET /api/host/users?page=0&size=50
+
+# Get second page
+GET /api/host/users?page=1&size=50
+
+# Get first page with 25 users per page, sorted by last login
+GET /api/host/users?page=0&size=25&sortBy=lastLoginAt&sortOrder=desc
+
+# Combine pagination with filtering
+GET /api/host/users?page=0&size=50&emailVerified=true&sortBy=createdAt
+```
+
+### PaginatedResponse DTO
+**File:** `src/main/java/com/sweepgoat/backend/dto/PaginatedResponse.java`
+
+Generic wrapper for paginated responses. Reusable for any entity type (users, giveaways, entries, etc.)
+
+## White-Label Branding
+
+Hosts can customize their subdomain's appearance with custom logos and brand colors.
+
+### Branding Fields
+- **logoUrl** - Cloudflare Images URL for host's logo (optional)
+- **primaryColor** - Hex color code for brand color (optional, default: #FFFF00 yellow)
+
+### Branding Endpoints
+
+#### GET /api/host/branding
+Get current branding settings for the authenticated host.
+
+**Example Response:**
+```json
+{
+  "logoUrl": "https://imagedelivery.net/...",
+  "primaryColor": "#FFFF00"
+}
+```
+
+**Notes:**
+- Returns default yellow (#FFFF00) if no primary color is set
+- Requires HOST authentication
+
+#### PATCH /api/host/branding
+Update host branding (logo and/or primary color).
+
+**Request Body (all fields optional):**
+```json
+{
+  "logoUrl": "https://imagedelivery.net/abc123/logo.png",
+  "primaryColor": "#FF5733"
+}
+```
+
+**Validation:**
+- `primaryColor` must be valid hex format: `#RGB` or `#RRGGBB` (e.g., `#FFF` or `#FFFF00`)
+- `logoUrl` must be accessible (HEAD request check)
+- Logo URLs should use Cloudflare Images
+
+**Example:**
+```bash
+# Update only the color
+PATCH /api/host/branding
+{
+  "primaryColor": "#FF5733"
+}
+
+# Update only the logo
+PATCH /api/host/branding
+{
+  "logoUrl": "https://imagedelivery.net/abc123/logo.png"
+}
+
+# Update both
+PATCH /api/host/branding
+{
+  "logoUrl": "https://imagedelivery.net/abc123/logo.png",
+  "primaryColor": "#FF5733"
+}
+```
+
+### Implementation Details
+
+**DTOs:**
+- `UpdateBrandingRequest` - Request DTO with optional logoUrl and primaryColor
+- `BrandingResponse` - Response DTO with current branding settings
+
+**Service Methods:**
+- `HostAuthService.updateBranding()` - Updates branding fields, validates URL accessibility
+- `HostAuthService.getBranding()` - Returns current branding with defaults
+
+**Files:**
+- `src/main/java/com/sweepgoat/backend/dto/UpdateBrandingRequest.java`
+- `src/main/java/com/sweepgoat/backend/dto/BrandingResponse.java`
+- `src/main/java/com/sweepgoat/backend/service/HostAuthService.java`
+- `src/main/java/com/sweepgoat/backend/controller/HostBrandingController.java`
+
 ## Recent Changes
+
+### 2025-10-30 - White-Label Branding
+1. **Host Branding Customization**
+   - New endpoints: `GET /api/host/branding` and `PATCH /api/host/branding`
+   - Hosts can customize logo and primary brand color
+   - Logo URL validation via HEAD request (checks accessibility)
+   - Color validation via regex pattern: supports #RGB and #RRGGBB formats
+   - Default primary color: #FFFF00 (yellow)
+   - Uses Cloudflare Images for logo hosting
+   - **Files created/modified**:
+     - `src/main/java/com/sweepgoat/backend/dto/UpdateBrandingRequest.java` (NEW)
+     - `src/main/java/com/sweepgoat/backend/dto/BrandingResponse.java` (NEW)
+     - `src/main/java/com/sweepgoat/backend/controller/HostBrandingController.java` (NEW)
+     - `src/main/java/com/sweepgoat/backend/service/HostAuthService.java` (updated with branding methods)
+     - `src/main/java/com/sweepgoat/backend/controller/RootController.java` (added branding endpoints to docs)
+
+### 2025-10-30 - User List Pagination
+1. **Pagination Support for User List**
+   - Added `PaginatedResponse<T>` generic DTO for reusable pagination wrapper
+   - Updated `GET /api/host/users` endpoint to support pagination
+   - Query parameters:
+     - `page` (default: 0) - Page number (0-indexed)
+     - `size` (default: 50) - Items per page
+   - Response includes pagination metadata (totalPages, totalItems, hasNext, hasPrevious)
+   - Backward compatible: No pagination params = first 50 users
+   - Works seamlessly with existing sorting and filtering
+   - **Files modified**:
+     - `src/main/java/com/sweepgoat/backend/dto/PaginatedResponse.java` (NEW)
+     - `src/main/java/com/sweepgoat/backend/repository/UserRepository.java`
+     - `src/main/java/com/sweepgoat/backend/service/UserAuthService.java`
+     - `src/main/java/com/sweepgoat/backend/controller/HostUserController.java`
+     - `src/main/java/com/sweepgoat/backend/controller/RootController.java`
 
 ### 2025-10-24 - CRM User Sorting
 1. **CRM User Sorting Feature**

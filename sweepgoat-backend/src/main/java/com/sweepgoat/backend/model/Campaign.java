@@ -64,6 +64,9 @@ public class Campaign {
     @Column(name = "total_failed")
     private Integer totalFailed = 0; // Failed to send
 
+    @Column(name = "filters_json", columnDefinition = "TEXT")
+    private String filtersJson; // JSON string storing filter criteria used for targeting
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

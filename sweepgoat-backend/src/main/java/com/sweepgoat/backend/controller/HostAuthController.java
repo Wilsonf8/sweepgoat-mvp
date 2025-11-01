@@ -3,6 +3,9 @@ package com.sweepgoat.backend.controller;
 import com.sweepgoat.backend.dto.HostLoginRequest;
 import com.sweepgoat.backend.dto.HostLoginResponse;
 import com.sweepgoat.backend.dto.HostRegisterRequest;
+import com.sweepgoat.backend.dto.MessageResponse;
+import com.sweepgoat.backend.dto.ResendVerificationRequest;
+import com.sweepgoat.backend.dto.VerifyEmailRequest;
 import com.sweepgoat.backend.exception.InvalidDomainException;
 import com.sweepgoat.backend.service.HostAuthService;
 import com.sweepgoat.backend.util.SubdomainExtractor;
@@ -25,9 +28,10 @@ public class HostAuthController {
     /**
      * POST /api/auth/host/register
      * Register a new host (only allowed on main domain: sweepgoat.com)
+     * Returns a message - host must verify email before login
      */
     @PostMapping("/register")
-    public ResponseEntity<HostLoginResponse> register(
+    public ResponseEntity<MessageResponse> register(
             @Valid @RequestBody HostRegisterRequest request,
             HttpServletRequest httpRequest) {
 
@@ -36,7 +40,7 @@ public class HostAuthController {
             throw new InvalidDomainException("Host registration is only allowed on the main domain (sweepgoat.com)");
         }
 
-        HostLoginResponse response = hostAuthService.registerHost(request);
+        MessageResponse response = hostAuthService.registerHost(request);
         return ResponseEntity.ok(response);
     }
 
@@ -45,12 +49,37 @@ public class HostAuthController {
      * Login as host (can be done from both main domain and subdomain)
      * - Main domain (sweepgoat.com): Manage subdomains
      * - Subdomain (host1.sweepgoat.com): Access CRM dashboard
+     * Throws EmailNotVerifiedException if email not verified
      */
     @PostMapping("/login")
     public ResponseEntity<HostLoginResponse> login(
             @Valid @RequestBody HostLoginRequest request) {
 
         HostLoginResponse response = hostAuthService.authenticateHost(request);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * POST /api/auth/host/verify-email
+     * Verify host email with 6-digit code sent during registration
+     */
+    @PostMapping("/verify-email")
+    public ResponseEntity<MessageResponse> verifyEmail(
+            @Valid @RequestBody VerifyEmailRequest request) {
+
+        MessageResponse response = hostAuthService.verifyHostEmail(request);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * POST /api/auth/host/resend-verification
+     * Resend verification code to host's email
+     */
+    @PostMapping("/resend-verification")
+    public ResponseEntity<MessageResponse> resendVerification(
+            @Valid @RequestBody ResendVerificationRequest request) {
+
+        MessageResponse response = hostAuthService.resendHostVerificationCode(request);
         return ResponseEntity.ok(response);
     }
 }

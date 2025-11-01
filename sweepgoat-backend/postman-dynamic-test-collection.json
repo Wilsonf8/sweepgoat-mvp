@@ -1,0 +1,990 @@
+{
+	"info": {
+		"name": "Sweepgoat - Dynamic Testing (Repeatable)",
+		"description": "Comprehensive test collection with dynamic values - can be run multiple times without conflicts",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8081",
+			"type": "string"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Collection-level pre-request script",
+					"// Creates unique identifiers for this test run",
+					"",
+					"if (!pm.environment.get('runId')) {",
+					"    const runId = Date.now();",
+					"    pm.environment.set('runId', runId);",
+					"    console.log('🚀 Starting new test run:', runId);",
+					"}",
+					"",
+					"// Make timestamp available",
+					"pm.environment.set('timestamp', Date.now());"
+				]
+			}
+		}
+	],
+	"item": [
+		{
+			"name": "1. Register Host",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Generate unique host data",
+							"const timestamp = Date.now();",
+							"pm.environment.set('hostSubdomain', `testhost${timestamp}`);",
+							"pm.environment.set('hostEmail', `host${timestamp}@example.com`);",
+							"pm.environment.set('hostCompany', `Test Company ${timestamp}`);",
+							"pm.environment.set('hostPassword', 'Password123!');"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Host registered successfully', () => {",
+							"    pm.response.to.have.status(200);",
+							"    const json = pm.response.json();",
+							"    console.log(`✅ Host registered: ${pm.environment.get('hostSubdomain')}`);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"subdomain\": \"{{hostSubdomain}}\",\n  \"companyName\": \"{{hostCompany}}\",\n  \"email\": \"{{hostEmail}}\",\n  \"password\": \"{{hostPassword}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/auth/host/register",
+					"host": ["{{baseUrl}}"],
+					"path": ["api", "auth", "host", "register"]
+				}
+			}
+		},
+		{
+			"name": "2. Login Host",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Host login successful', () => {",
+							"    pm.response.to.have.status(200);",
+							"    const json = pm.response.json();",
+							"    pm.expect(json.token).to.be.a('string');",
+							"    ",
+							"    // Save token for subsequent requests",
+							"    pm.environment.set('hostToken', json.token);",
+							"    pm.environment.set('hostId', json.hostId);",
+							"    console.log(`✅ Host logged in: ${json.subdomain}`);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"{{hostEmail}}\",\n  \"password\": \"{{hostPassword}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/auth/host/login",
+					"host": ["{{baseUrl}}"],
+					"path": ["api", "auth", "host", "login"]
+				}
+			}
+		},
+		{
+			"name": "3. Create Giveaway 1",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Set giveaway dates",
+							"const now = new Date();",
+							"const startDate = now.toISOString();",
+							"const endDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString();",
+							"",
+							"pm.environment.set('giveaway1Start', startDate);",
+							"pm.environment.set('giveaway1End', endDate);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Giveaway 1 created', () => {",
+							"    pm.response.to.have.status(201);",
+							"    const json = pm.response.json();",
+							"    pm.environment.set('giveaway1Id', json.id);",
+							"    console.log(`✅ Giveaway 1 created: ID ${json.id}`);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{hostToken}}"
+					},
+					{
+						"key": "X-Subdomain",
+						"value": "{{hostSubdomain}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"title\": \"Amazing Prize Giveaway\",\n  \"description\": \"Win fantastic prizes!\",\n  \"imageUrl\": \"https://example.com/image.jpg\",\n  \"startDate\": \"{{giveaway1Start}}\",\n  \"endDate\": \"{{giveaway1End}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/host/giveaways",
+					"host": ["{{baseUrl}}"],
+					"path": ["api", "host", "giveaways"]
+				}
+			}
+		},
+		{
+			"name": "4. Create Giveaway 2",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const now = new Date();",
+							"const startDate = now.toISOString();",
+							"const endDate = new Date(now.getTime() + 60 * 24 * 60 * 60 * 1000).toISOString();",
+							"",
+							"pm.environment.set('giveaway2Start', startDate);",
+							"pm.environment.set('giveaway2End', endDate);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Giveaway 2 created', () => {",
+							"    pm.response.to.have.status(201);",
+							"    const json = pm.response.json();",
+							"    pm.environment.set('giveaway2Id', json.id);",
+							"    console.log(`✅ Giveaway 2 created: ID ${json.id}`);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{hostToken}}"
+					},
+					{
+						"key": "X-Subdomain",
+						"value": "{{hostSubdomain}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"title\": \"Grand Prize Draw\",\n  \"description\": \"Enter to win the grand prize!\",\n  \"imageUrl\": \"https://example.com/grand-prize.jpg\",\n  \"startDate\": \"{{giveaway2Start}}\",\n  \"endDate\": \"{{giveaway2End}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/host/giveaways",
+					"host": ["{{baseUrl}}"],
+					"path": ["api", "host", "giveaways"]
+				}
+			}
+		},
+		{
+			"name": "Register Users",
+			"item": [
+				{
+					"name": "Register User 1 (Email Opt-In)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const ts = Date.now();",
+									"pm.environment.set('user1Email', `user1-${ts}@example.com`);",
+									"pm.environment.set('user1Username', `user1_${ts}`);",
+									"pm.environment.set('user1Password', 'Pass123!');"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('User 1 registered', () => {",
+									"    pm.response.to.have.status(200);",
+									"    console.log(`✅ User 1: ${pm.environment.get('user1Email')}`);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Subdomain",
+								"value": "{{hostSubdomain}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{user1Email}}\",\n  \"username\": \"{{user1Username}}\",\n  \"firstName\": \"Alice\",\n  \"lastName\": \"Johnson\",\n  \"phoneNumber\": \"+1-555-{{$randomInt}}\",\n  \"password\": \"{{user1Password}}\",\n  \"emailOptIn\": true,\n  \"smsOptIn\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/user/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "auth", "user", "register"]
+						}
+					}
+				},
+				{
+					"name": "Register User 2 (Both Opt-Ins)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const ts = Date.now();",
+									"pm.environment.set('user2Email', `user2-${ts}@example.com`);",
+									"pm.environment.set('user2Username', `user2_${ts}`);",
+									"pm.environment.set('user2Password', 'Pass123!');"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('User 2 registered', () => {",
+									"    pm.response.to.have.status(200);",
+									"    console.log(`✅ User 2: ${pm.environment.get('user2Email')}`);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Subdomain",
+								"value": "{{hostSubdomain}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{user2Email}}\",\n  \"username\": \"{{user2Username}}\",\n  \"firstName\": \"Bob\",\n  \"lastName\": \"Smith\",\n  \"phoneNumber\": \"+1-555-{{$randomInt}}\",\n  \"password\": \"{{user2Password}}\",\n  \"emailOptIn\": true,\n  \"smsOptIn\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/user/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "auth", "user", "register"]
+						}
+					}
+				},
+				{
+					"name": "Register User 3 (No Opt-Ins)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const ts = Date.now();",
+									"pm.environment.set('user3Email', `user3-${ts}@example.com`);",
+									"pm.environment.set('user3Username', `user3_${ts}`);",
+									"pm.environment.set('user3Password', 'Pass123!');"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('User 3 registered', () => {",
+									"    pm.response.to.have.status(200);",
+									"    console.log(`✅ User 3: ${pm.environment.get('user3Email')}`);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Subdomain",
+								"value": "{{hostSubdomain}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{user3Email}}\",\n  \"username\": \"{{user3Username}}\",\n  \"firstName\": \"Charlie\",\n  \"lastName\": \"Brown\",\n  \"phoneNumber\": \"+1-555-{{$randomInt}}\",\n  \"password\": \"{{user3Password}}\",\n  \"emailOptIn\": false,\n  \"smsOptIn\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/user/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "auth", "user", "register"]
+						}
+					}
+				},
+				{
+					"name": "Register User 4 (Email Opt-In)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const ts = Date.now();",
+									"pm.environment.set('user4Email', `user4-${ts}@example.com`);",
+									"pm.environment.set('user4Username', `user4_${ts}`);",
+									"pm.environment.set('user4Password', 'Pass123!');"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('User 4 registered', () => {",
+									"    pm.response.to.have.status(200);",
+									"    console.log(`✅ User 4: ${pm.environment.get('user4Email')}`);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Subdomain",
+								"value": "{{hostSubdomain}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{user4Email}}\",\n  \"username\": \"{{user4Username}}\",\n  \"firstName\": \"Diana\",\n  \"lastName\": \"Wilson\",\n  \"phoneNumber\": \"+1-555-{{$randomInt}}\",\n  \"password\": \"{{user4Password}}\",\n  \"emailOptIn\": true,\n  \"smsOptIn\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/user/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "auth", "user", "register"]
+						}
+					}
+				},
+				{
+					"name": "Register User 5 (Email Opt-In)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const ts = Date.now();",
+									"pm.environment.set('user5Email', `user5-${ts}@example.com`);",
+									"pm.environment.set('user5Username', `user5_${ts}`);",
+									"pm.environment.set('user5Password', 'Pass123!');"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('User 5 registered', () => {",
+									"    pm.response.to.have.status(200);",
+									"    console.log(`✅ User 5: ${pm.environment.get('user5Email')}`);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Subdomain",
+								"value": "{{hostSubdomain}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{user5Email}}\",\n  \"username\": \"{{user5Username}}\",\n  \"firstName\": \"Eva\",\n  \"lastName\": \"Martinez\",\n  \"phoneNumber\": \"+1-555-{{$randomInt}}\",\n  \"password\": \"{{user5Password}}\",\n  \"emailOptIn\": true,\n  \"smsOptIn\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/user/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "auth", "user", "register"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Login Users",
+			"item": [
+				{
+					"name": "Login User 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('User 1 logged in', () => {",
+									"    pm.response.to.have.status(200);",
+									"    const json = pm.response.json();",
+									"    pm.environment.set('user1Token', json.token);",
+									"    pm.environment.set('user1Id', json.userId);",
+									"    console.log('✅ User 1 logged in');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Subdomain",
+								"value": "{{hostSubdomain}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{user1Email}}\",\n  \"password\": \"{{user1Password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/user/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "auth", "user", "login"]
+						}
+					}
+				},
+				{
+					"name": "Login User 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('User 2 logged in', () => {",
+									"    pm.response.to.have.status(200);",
+									"    const json = pm.response.json();",
+									"    pm.environment.set('user2Token', json.token);",
+									"    pm.environment.set('user2Id', json.userId);",
+									"    console.log('✅ User 2 logged in');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Subdomain",
+								"value": "{{hostSubdomain}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{user2Email}}\",\n  \"password\": \"{{user2Password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/user/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "auth", "user", "login"]
+						}
+					}
+				},
+				{
+					"name": "Login User 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('User 3 logged in', () => {",
+									"    pm.response.to.have.status(200);",
+									"    const json = pm.response.json();",
+									"    pm.environment.set('user3Token', json.token);",
+									"    pm.environment.set('user3Id', json.userId);",
+									"    console.log('✅ User 3 logged in');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Subdomain",
+								"value": "{{hostSubdomain}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{user3Email}}\",\n  \"password\": \"{{user3Password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/user/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "auth", "user", "login"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Giveaway Entries",
+			"item": [
+				{
+					"name": "User 1 - Claim Free Entry (Giveaway 1)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('User 1 claimed free entry for giveaway 1', () => {",
+									"    pm.response.to.have.status(200);",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.success).to.be.true;",
+									"    pm.expect(json.entry.points).to.equal(1);",
+									"    pm.expect(json.entry.freeEntryClaimed).to.be.true;",
+									"    console.log('✅ User 1 claimed free entry for Giveaway 1 (1 point)');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{user1Token}}"
+							},
+							{
+								"key": "X-Subdomain",
+								"value": "{{hostSubdomain}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/user/giveaways/{{giveaway1Id}}/enter/free",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "user", "giveaways", "{{giveaway1Id}}", "enter", "free"]
+						}
+					}
+				},
+				{
+					"name": "User 2 - Claim Free Entry (Giveaway 1)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('User 2 claimed free entry for giveaway 1', () => {",
+									"    pm.response.to.have.status(200);",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.success).to.be.true;",
+									"    pm.expect(json.entry.points).to.equal(1);",
+									"    pm.expect(json.entry.freeEntryClaimed).to.be.true;",
+									"    console.log('✅ User 2 claimed free entry for Giveaway 1 (1 point)');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{user2Token}}"
+							},
+							{
+								"key": "X-Subdomain",
+								"value": "{{hostSubdomain}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/user/giveaways/{{giveaway1Id}}/enter/free",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "user", "giveaways", "{{giveaway1Id}}", "enter", "free"]
+						}
+					}
+				},
+				{
+					"name": "User 1 - Claim Free Entry (Giveaway 2)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('User 1 claimed free entry for giveaway 2', () => {",
+									"    pm.response.to.have.status(200);",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.success).to.be.true;",
+									"    pm.expect(json.entry.points).to.equal(1);",
+									"    pm.expect(json.entry.freeEntryClaimed).to.be.true;",
+									"    console.log('✅ User 1 claimed free entry for Giveaway 2 (1 point)');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{user1Token}}"
+							},
+							{
+								"key": "X-Subdomain",
+								"value": "{{hostSubdomain}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/user/giveaways/{{giveaway2Id}}/enter/free",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "user", "giveaways", "{{giveaway2Id}}", "enter", "free"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Marketing Campaigns",
+			"item": [
+				{
+					"name": "Send to All Email Opt-Ins",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Campaign sent successfully', () => {",
+									"    pm.response.to.have.status(200);",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.campaignId).to.be.a('number');",
+									"    pm.expect(json.status).to.equal('SENT');",
+									"    console.log(`✅ Campaign sent to ${json.totalSent} users`);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{hostToken}}"
+							},
+							{
+								"key": "X-Subdomain",
+								"value": "{{hostSubdomain}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Welcome Campaign\",\n  \"type\": \"EMAIL\",\n  \"subject\": \"Welcome {{firstName}}!\",\n  \"message\": \"Hi {{firstName}} {{lastName}},\\n\\nWelcome to {{hostCompanyName}}!\\n\\nVisit: https://{{subdomain}}.sweepgoat.com\\n\\nBest regards,\\nThe {{hostCompanyName}} Team\",\n  \"emailOptIn\": true,\n  \"sortBy\": \"firstName\",\n  \"sortOrder\": \"asc\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/host/campaigns/send",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "host", "campaigns", "send"]
+						}
+					}
+				},
+				{
+					"name": "Send to Giveaway 1 Participants",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Giveaway campaign sent', () => {",
+									"    pm.response.to.have.status(200);",
+									"    const json = pm.response.json();",
+									"    console.log(`✅ Giveaway 1 campaign sent to ${json.totalSent} users`);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{hostToken}}"
+							},
+							{
+								"key": "X-Subdomain",
+								"value": "{{hostSubdomain}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Giveaway Reminder\",\n  \"type\": \"EMAIL\",\n  \"subject\": \"{{firstName}}, Don't Miss Out!\",\n  \"message\": \"Hey {{firstName}},\\n\\nDon't forget about our giveaway!\\n\\nCheck your status: https://{{subdomain}}.sweepgoat.com\\n\\nGood luck!\\n- {{hostCompanyName}}\",\n  \"giveawayId\": {{giveaway1Id}},\n  \"emailOptIn\": true,\n  \"sortBy\": \"lastName\",\n  \"sortOrder\": \"asc\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/host/campaigns/send",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "host", "campaigns", "send"]
+						}
+					}
+				},
+				{
+					"name": "Test Template Variables",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Template test sent', () => {",
+									"    pm.response.to.have.status(200);",
+									"    const json = pm.response.json();",
+									"    console.log(`✅ Template test sent to ${json.totalSent} users`);",
+									"    console.log('Check server logs for variable replacement');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{hostToken}}"
+							},
+							{
+								"key": "X-Subdomain",
+								"value": "{{hostSubdomain}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Template Test\",\n  \"type\": \"EMAIL\",\n  \"subject\": \"Hello {{firstName}} {{lastName}}!\",\n  \"message\": \"Template Variables:\\n\\nFirst: {{firstName}}\\nLast: {{lastName}}\\nCompany: {{hostCompanyName}}\\nSubdomain: {{subdomain}}\\n\\nURL: https://{{subdomain}}.sweepgoat.com\",\n  \"emailOptIn\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/host/campaigns/send",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "host", "campaigns", "send"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "View Data",
+			"item": [
+				{
+					"name": "View All Users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Retrieved users', () => {",
+									"    pm.response.to.have.status(200);",
+									"    const users = pm.response.json();",
+									"    console.log(`📊 Total users: ${users.length}`);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{hostToken}}"
+							},
+							{
+								"key": "X-Subdomain",
+								"value": "{{hostSubdomain}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/host/users",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "host", "users"]
+						}
+					}
+				},
+				{
+					"name": "View Giveaway 1 Leaderboard",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Retrieved leaderboard', () => {",
+									"    pm.response.to.have.status(200);",
+									"    const entries = pm.response.json();",
+									"    console.log(`📊 Giveaway 1 entries: ${entries.length}`);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{hostToken}}"
+							},
+							{
+								"key": "X-Subdomain",
+								"value": "{{hostSubdomain}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/host/giveaways/{{giveaway1Id}}/entries",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "host", "giveaways", "{{giveaway1Id}}", "entries"]
+						}
+					}
+				}
+			]
+		}
+	]
+}

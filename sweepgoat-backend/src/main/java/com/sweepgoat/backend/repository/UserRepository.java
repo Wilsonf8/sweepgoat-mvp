@@ -1,8 +1,12 @@
 package com.sweepgoat.backend.repository;
 
 import com.sweepgoat.backend.model.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -42,4 +46,20 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmailAndHostId(String email, Long hostId);
 
     boolean existsByUsernameAndHostId(String username, Long hostId);
+
+    @Query("SELECT DISTINCT u FROM User u " +
+            "LEFT JOIN GiveawayEntry ge ON ge.user.id = u.id " +
+            "WHERE u.host.id = :hostId " +
+            "AND (:giveawayId IS NULL OR ge.giveaway.id = :giveawayId) " +
+            "AND (:emailVerified IS NULL OR u.emailVerified = :emailVerified) " +
+            "AND (:emailOptIn IS NULL OR u.emailOptIn = :emailOptIn) " +
+            "AND (:smsOptIn IS NULL OR u.smsOptIn = :smsOptIn)")
+    Page<User> findByHostIdWithFilters(
+            @Param("hostId") Long hostId,
+            @Param("giveawayId") Long giveawayId,
+            @Param("emailVerified") Boolean emailVerified,
+            @Param("emailOptIn") Boolean emailOptIn,
+            @Param("smsOptIn") Boolean smsOptIn,
+            Pageable pageable
+    );
 }

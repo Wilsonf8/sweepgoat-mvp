@@ -1,7 +1,10 @@
 package com.sweepgoat.backend.security;
 
+import com.sweepgoat.backend.model.Host;
+import com.sweepgoat.backend.repository.HostRepository;
 import com.sweepgoat.backend.util.JwtUtil;
 import com.sweepgoat.backend.util.SubdomainExtractor;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,6 +19,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -25,6 +31,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
     private SubdomainExtractor subdomainExtractor;
+
+    @Autowired
+    private HostRepository hostRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -61,6 +70,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // Extract subdomain from request
                 String subdomain = subdomainExtractor.extractSubdomain(request);
 
+                // Validate subdomain matches token's hostId
+                if (!validateSubdomainMatchesToken(subdomain, hostId, request.getRequestURI(), response)) {
+                    // Validation failed, error response already sent
+                    return;
+                }
+
                 // Create authority based on user type
                 SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + userType);
 
@@ -92,5 +107,68 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // Continue filter chain
         filterChain.doFilter(request, response);
+    }
+
+    /**
+     * Validate that the subdomain in the request matches the hostId in the JWT token
+     * Returns true if validation passes, false if validation fails (response already sent)
+     */
+    private boolean validateSubdomainMatchesToken(String subdomain, Long hostId,
+                                                   String requestURI, HttpServletResponse response)
+                                                   throws IOException {
+        // Skip validation for auth and public endpoints
+        if (requestURI.startsWith("/api/auth/") ||
+            requestURI.startsWith("/api/public/") ||
+            requestURI.equals("/") ||
+            requestURI.equals("/health")) {
+            return true;
+        }
+
+        // If no subdomain provided, allow (some endpoints don't require it)
+        if (subdomain == null || subdomain.isEmpty()) {
+            return true;
+        }
+
+        // Look up host by subdomain
+        Optional<Host> hostOptional = hostRepository.findBySubdomain(subdomain);
+
+        if (hostOptional.isEmpty()) {
+            // Subdomain doesn't exist
+            sendForbiddenResponse(response, "Invalid subdomain",
+                "The subdomain '" + subdomain + "' does not exist");
+            logger.warn("Security: Invalid subdomain attempted: " + subdomain);
+            return false;
+        }
+
+        Host host = hostOptional.get();
+
+        // Verify host ID matches token's host ID
+        if (!host.getId().equals(hostId)) {
+            // Subdomain/token mismatch - security violation!
+            sendForbiddenResponse(response, "Subdomain/token mismatch",
+                "Your authentication token does not match the requested subdomain");
+            logger.warn("Security: Subdomain/token mismatch - Token hostId: " + hostId +
+                       ", Subdomain: " + subdomain + " (hostId: " + host.getId() + ")");
+            return false;
+        }
+
+        // Validation passed
+        return true;
+    }
+
+    /**
+     * Send a 403 Forbidden response with JSON error message
+     */
+    private void sendForbiddenResponse(HttpServletResponse response, String error, String message)
+                                        throws IOException {
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        response.setContentType("application/json");
+
+        Map<String, String> errorBody = new HashMap<>();
+        errorBody.put("error", error);
+        errorBody.put("message", message);
+
+        ObjectMapper mapper = new ObjectMapper();
+        response.getWriter().write(mapper.writeValueAsString(errorBody));
     }
 }

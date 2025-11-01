@@ -6,8 +6,10 @@ import com.sweepgoat.backend.exception.EmailNotVerifiedException;
 import com.sweepgoat.backend.exception.InvalidCredentialsException;
 import com.sweepgoat.backend.exception.InvalidVerificationCodeException;
 import com.sweepgoat.backend.exception.ResourceNotFoundException;
+import com.sweepgoat.backend.model.Giveaway;
 import com.sweepgoat.backend.model.Host;
 import com.sweepgoat.backend.model.User;
+import com.sweepgoat.backend.repository.GiveawayRepository;
 import com.sweepgoat.backend.repository.HostRepository;
 import com.sweepgoat.backend.repository.UserRepository;
 import com.sweepgoat.backend.util.JwtUtil;
@@ -15,11 +17,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Random;
 
 @Service
@@ -32,6 +38,9 @@ public class UserAuthService {
 
     @Autowired
     private HostRepository hostRepository;
+
+    @Autowired
+    private GiveawayRepository giveawayRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -240,9 +249,41 @@ public class UserAuthService {
 
     /**
      * Get all users for a host (HOST auth required)
-     * Supports optional sorting by field and order
+     * Supports pagination, filtering, and sorting
+     *
+     * Pagination:
+     * - page: Page number (0-indexed, default: 0)
+     * - size: Items per page (default: 50)
+     *
+     * Filters:
+     * - giveawayId: Only return users who entered this specific giveaway
+     * - emailVerified: Filter by email verification status
+     * - emailOptIn: Filter by email marketing opt-in status
+     * - smsOptIn: Filter by SMS marketing opt-in status
+     *
+     * Sorting: By lastLoginAt, createdAt, email, firstName, or lastName (asc/desc)
      */
-    public java.util.List<UserListResponse> getUsersByHostId(Long hostId, String sortBy, String sortOrder) {
+    public PaginatedResponse<UserListResponse> getUsersByHostId(
+            Long hostId,
+            int page,
+            int size,
+            String sortBy,
+            String sortOrder,
+            Long giveawayId,
+            Boolean emailVerified,
+            Boolean emailOptIn,
+            Boolean smsOptIn) {
+
+        // VALIDATION: If giveawayId provided, verify it belongs to this host
+        if (giveawayId != null) {
+            Giveaway giveaway = giveawayRepository.findById(giveawayId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Giveaway not found"));
+
+            if (!giveaway.getHost().getId().equals(hostId)) {
+                throw new ResourceNotFoundException("Giveaway not found");
+            }
+        }
+
         // Determine sort direction
         org.springframework.data.domain.Sort.Direction direction =
             "asc".equalsIgnoreCase(sortOrder) ?
@@ -279,13 +320,16 @@ public class UserAuthService {
             sortField = "createdAt";
         }
 
-        // Create sort object
-        org.springframework.data.domain.Sort sort = org.springframework.data.domain.Sort.by(direction, sortField);
+        // Create Pageable object (combines pagination + sorting)
+        Pageable pageable = PageRequest.of(page, size, direction, sortField);
 
-        // Fetch sorted users
-        java.util.List<User> users = userRepository.findByHostId(hostId, sort);
+        // Fetch filtered, sorted, and paginated users
+        Page<User> userPage = userRepository.findByHostIdWithFilters(
+                hostId, giveawayId, emailVerified, emailOptIn, smsOptIn, pageable
+        );
 
-        return users.stream()
+        // Map User entities to UserListResponse DTOs
+        List<UserListResponse> userListResponses = userPage.getContent().stream()
             .map(user -> new UserListResponse(
                 user.getId(),
                 user.getEmail(),
@@ -299,6 +343,17 @@ public class UserAuthService {
                 user.getLastLoginAt()
             ))
             .collect(java.util.stream.Collectors.toList());
+
+        // Build paginated response with metadata
+        return new PaginatedResponse<>(
+            userListResponses,                    // data
+            userPage.getNumber(),                 // currentPage (0-indexed)
+            userPage.getTotalPages(),             // totalPages
+            userPage.getTotalElements(),          // totalItems
+            userPage.getSize(),                   // pageSize
+            userPage.hasNext(),                   // hasNext
+            userPage.hasPrevious()                // hasPrevious
+        );
     }
 
     /**

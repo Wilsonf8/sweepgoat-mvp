@@ -1,0 +1,341 @@
+{
+  "info": {
+    "name": "Host Email Verification Test",
+    "description": "Test host registration, email verification, and login flow. Tests what happens when verification is skipped.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Register Host (Unverified)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Test that registration returns a message (not a token)",
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response contains success message\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.message).to.include(\"verification code\");",
+              "});",
+              "",
+              "pm.test(\"Response does NOT contain token\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.not.have.property('token');",
+              "});",
+              "",
+              "// Save email for later requests",
+              "pm.environment.set(\"hostEmail\", pm.request.body.raw ? JSON.parse(pm.request.body.raw).email : null);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"subdomain\": \"testhost\",\n  \"companyName\": \"Test Company\",\n  \"email\": \"testhost@example.com\",\n  \"password\": \"SecurePassword123!\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/host/register",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "host", "register"]
+        },
+        "description": "Register a new host. Check the backend console logs for the 6-digit verification code."
+      },
+      "response": []
+    },
+    {
+      "name": "2. Login WITHOUT Email Verification (Should Fail)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Test that login is blocked for unverified email",
+              "pm.test(\"Status code is 403 Forbidden\", function () {",
+              "    pm.response.to.have.status(403);",
+              "});",
+              "",
+              "pm.test(\"Response indicates email not verified\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.error).to.include(\"verify your email\");",
+              "    pm.expect(jsonData.emailVerified).to.eql(false);",
+              "    pm.expect(jsonData.email).to.eql(pm.environment.get(\"hostEmail\"));",
+              "});",
+              "",
+              "pm.test(\"Response does NOT contain token\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.not.have.property('token');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"testhost@example.com\",\n  \"password\": \"SecurePassword123!\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/host/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "host", "login"]
+        },
+        "description": "Try to login without verifying email. This should fail with a 403 error indicating email verification is required."
+      },
+      "response": []
+    },
+    {
+      "name": "3. Verify Email with WRONG Code (Should Fail)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Test that wrong verification code is rejected",
+              "pm.test(\"Status code is 400 Bad Request\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "",
+              "pm.test(\"Response indicates invalid code\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.error).to.include(\"Invalid verification code\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"testhost@example.com\",\n  \"code\": \"000000\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/host/verify-email",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "host", "verify-email"]
+        },
+        "description": "Try to verify with wrong code (000000). This should fail."
+      },
+      "response": []
+    },
+    {
+      "name": "4. Resend Verification Code",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Test that resend code works",
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response confirms code was sent\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.message).to.include(\"Verification code sent\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"testhost@example.com\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/host/verify-email",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "host", "resend-verification"]
+        },
+        "description": "Resend verification code. Check backend console for the NEW 6-digit code."
+      },
+      "response": []
+    },
+    {
+      "name": "5. Verify Email with CORRECT Code",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Test that verification succeeds with correct code",
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response confirms email verified\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.message).to.include(\"Email verified successfully\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"testhost@example.com\",\n  \"code\": \"REPLACE_WITH_CODE_FROM_CONSOLE\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/host/verify-email",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "host", "verify-email"]
+        },
+        "description": "Verify email with the correct 6-digit code from the backend console logs. REPLACE 'REPLACE_WITH_CODE_FROM_CONSOLE' with the actual code."
+      },
+      "response": []
+    },
+    {
+      "name": "6. Login AFTER Email Verification (Should Succeed)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Test that login succeeds after verification",
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response contains JWT token\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('token');",
+              "    pm.expect(jsonData.token).to.be.a('string');",
+              "    pm.expect(jsonData.token.length).to.be.above(20);",
+              "});",
+              "",
+              "pm.test(\"Response contains host details\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.role).to.eql('HOST');",
+              "    pm.expect(jsonData.email).to.eql(pm.environment.get(\"hostEmail\"));",
+              "    pm.expect(jsonData.subdomain).to.eql('testhost');",
+              "    pm.expect(jsonData.companyName).to.eql('Test Company');",
+              "});",
+              "",
+              "// Save token for future authenticated requests",
+              "if (pm.response.code === 200) {",
+              "    var jsonData = pm.response.json();",
+              "    pm.environment.set(\"hostToken\", jsonData.token);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"testhost@example.com\",\n  \"password\": \"SecurePassword123!\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/host/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "host", "login"]
+        },
+        "description": "Login after email verification. This should now succeed and return a JWT token."
+      },
+      "response": []
+    },
+    {
+      "name": "7. Verify Already Verified Email (Idempotent Check)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Test that verifying an already-verified email is handled gracefully",
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response indicates already verified\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.message).to.include(\"already verified\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"testhost@example.com\",\n  \"code\": \"123456\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/host/verify-email",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "host", "verify-email"]
+        },
+        "description": "Try to verify an already-verified email. Should return a message saying it's already verified."
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8081",
+      "type": "string"
+    }
+  ]
+}

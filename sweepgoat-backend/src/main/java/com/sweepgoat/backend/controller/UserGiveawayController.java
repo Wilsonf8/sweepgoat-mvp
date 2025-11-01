@@ -24,13 +24,17 @@ public class UserGiveawayController {
     private UserAuthService userAuthService;
 
     /**
-     * POST /api/user/giveaways/{id}/enter
-     * Enter a giveaway (MVP: free entry only)
+     * POST /api/user/giveaways/{id}/enter/free
+     * Claim one-time free entry (1 point)
+     *
+     * - Always worth 1 point
+     * - Can only be claimed once per user per giveaway
+     * - Sets freeEntryClaimed = true
+     * - No request body needed
      */
-    @PostMapping("/giveaways/{id}/enter")
-    public ResponseEntity<GiveawayEntryResponse> enterGiveaway(
+    @PostMapping("/giveaways/{id}/enter/free")
+    public ResponseEntity<GiveawayEntryResponse> claimFreeEntry(
             @PathVariable Long id,
-            @RequestBody(required = false) GiveawayEntryRequest request,
             HttpServletRequest httpRequest) {
 
         // Extract userId from JWT (set by JwtAuthenticationFilter)
@@ -40,9 +44,38 @@ public class UserGiveawayController {
             throw new RuntimeException("Authentication required");
         }
 
-        // For MVP, we only support free entries
-        // Future: Use request.getIsFreeEntry() to determine entry type
-        GiveawayEntryResponse response = giveawayEntryService.enterGiveawayForFree(id, userId);
+        GiveawayEntryResponse response = giveawayEntryService.claimFreeEntry(id, userId);
+
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * POST /api/user/giveaways/{id}/enter
+     * Add regular entries (variable points)
+     *
+     * - Variable points based on request body
+     * - Can be used multiple times
+     * - Does NOT affect freeEntryClaimed status
+     * - Future: Will require payment/points purchase
+     *
+     * NOTE: This endpoint is a stub for future implementation
+     */
+    @PostMapping("/giveaways/{id}/enter")
+    public ResponseEntity<GiveawayEntryResponse> addRegularEntries(
+            @PathVariable Long id,
+            @RequestBody GiveawayEntryRequest request,
+            HttpServletRequest httpRequest) {
+
+        // Extract userId from JWT (set by JwtAuthenticationFilter)
+        Long userId = (Long) httpRequest.getAttribute("userId");
+
+        if (userId == null) {
+            throw new RuntimeException("Authentication required");
+        }
+
+        // TODO: Implement regular entry logic
+        // This is a placeholder for future payment/points system integration
+        GiveawayEntryResponse response = giveawayEntryService.addRegularEntries(id, userId, request.getPointsToAdd());
 
         return ResponseEntity.ok(response);
     }

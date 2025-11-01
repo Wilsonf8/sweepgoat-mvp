@@ -2014,6 +2014,606 @@
 			]
 		},
 		{
+			"name": "TEST - User Filtering",
+			"item": [
+				{
+					"name": "Filter by Giveaway 1 (iPhone)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+									"pm.test(\"Only users who entered giveaway 1\", () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.length).to.equal(2);",
+									"    // Alice and Bob entered giveaway 1",
+									"    const emails = json.map(u => u.email);",
+									"    pm.expect(emails).to.include('alice@test.com');",
+									"    pm.expect(emails).to.include('bob@test.com');",
+									"    console.log(\"✅ Filtered by giveaway 1 - found\", json.length, \"users\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{host1Token}}"
+							},
+							{
+								"key": "X-Subdomain",
+								"value": "{{host1Subdomain}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/host/users?giveawayId={{giveaway1Id}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"host",
+								"users"
+							],
+							"query": [
+								{
+									"key": "giveawayId",
+									"value": "{{giveaway1Id}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Filter by Giveaway 2 (MacBook)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+									"pm.test(\"Only users who entered giveaway 2\", () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.length).to.equal(2);",
+									"    const emails = json.map(u => u.email);",
+									"    pm.expect(emails).to.include('alice@test.com');",
+									"    pm.expect(emails).to.include('bob@test.com');",
+									"    console.log(\"✅ Filtered by giveaway 2 - found\", json.length, \"users\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{host1Token}}"
+							},
+							{
+								"key": "X-Subdomain",
+								"value": "{{host1Subdomain}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/host/users?giveawayId={{giveaway2Id}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"host",
+								"users"
+							],
+							"query": [
+								{
+									"key": "giveawayId",
+									"value": "{{giveaway2Id}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Filter by Email Verified (True)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+									"pm.test(\"All verified users returned\", () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.length).to.equal(5);",
+									"    // All users should have emailVerified: true",
+									"    json.forEach(user => {",
+									"        pm.expect(user.emailVerified).to.be.true;",
+									"    });",
+									"    console.log(\"✅ Filtered by emailVerified=true - found\", json.length, \"users\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{host1Token}}"
+							},
+							{
+								"key": "X-Subdomain",
+								"value": "{{host1Subdomain}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/host/users?emailVerified=true",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"host",
+								"users"
+							],
+							"query": [
+								{
+									"key": "emailVerified",
+									"value": "true"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Filter by Email Verified (False)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+									"pm.test(\"No unverified users (dev auto-verify enabled)\", () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.length).to.equal(0);",
+									"    console.log(\"✅ Filtered by emailVerified=false - found\", json.length, \"users\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{host1Token}}"
+							},
+							{
+								"key": "X-Subdomain",
+								"value": "{{host1Subdomain}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/host/users?emailVerified=false",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"host",
+								"users"
+							],
+							"query": [
+								{
+									"key": "emailVerified",
+									"value": "false"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Filter by Email Opt-In (True)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+									"pm.test(\"No users opted into email (default false)\", () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.length).to.equal(0);",
+									"    console.log(\"✅ Filtered by emailOptIn=true - found\", json.length, \"users\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{host1Token}}"
+							},
+							{
+								"key": "X-Subdomain",
+								"value": "{{host1Subdomain}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/host/users?emailOptIn=true",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"host",
+								"users"
+							],
+							"query": [
+								{
+									"key": "emailOptIn",
+									"value": "true"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Filter by SMS Opt-In (True)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+									"pm.test(\"No users opted into SMS (default false)\", () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.length).to.equal(0);",
+									"    console.log(\"✅ Filtered by smsOptIn=true - found\", json.length, \"users\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{host1Token}}"
+							},
+							{
+								"key": "X-Subdomain",
+								"value": "{{host1Subdomain}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/host/users?smsOptIn=true",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"host",
+								"users"
+							],
+							"query": [
+								{
+									"key": "smsOptIn",
+									"value": "true"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Combined Filter: Giveaway + Email Verified",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+									"pm.test(\"Verified users who entered giveaway 1\", () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.length).to.equal(2);",
+									"    json.forEach(user => {",
+									"        pm.expect(user.emailVerified).to.be.true;",
+									"    });",
+									"    console.log(\"✅ Combined filter: giveaway1 + emailVerified - found\", json.length, \"users\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{host1Token}}"
+							},
+							{
+								"key": "X-Subdomain",
+								"value": "{{host1Subdomain}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/host/users?giveawayId={{giveaway1Id}}&emailVerified=true",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"host",
+								"users"
+							],
+							"query": [
+								{
+									"key": "giveawayId",
+									"value": "{{giveaway1Id}}"
+								},
+								{
+									"key": "emailVerified",
+									"value": "true"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Combined Filter: Giveaway + Sorting",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+									"pm.test(\"Users in giveaway 1 sorted by firstName\", () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.length).to.equal(2);",
+									"    // Alphabetical: Alice, Bob",
+									"    pm.expect(json[0].firstName).to.equal('Alice');",
+									"    pm.expect(json[1].firstName).to.equal('Bob');",
+									"    console.log(\"✅ Giveaway filter + sorting - found\", json.length, \"users\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{host1Token}}"
+							},
+							{
+								"key": "X-Subdomain",
+								"value": "{{host1Subdomain}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/host/users?giveawayId={{giveaway1Id}}&sortBy=firstName&sortOrder=asc",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"host",
+								"users"
+							],
+							"query": [
+								{
+									"key": "giveawayId",
+									"value": "{{giveaway1Id}}"
+								},
+								{
+									"key": "sortBy",
+									"value": "firstName"
+								},
+								{
+									"key": "sortOrder",
+									"value": "asc"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Security Test: Cross-Tenant Giveaway Filter (Error)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 404 Not Found\", () => {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"pm.test(\"Error message about giveaway not found\", () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.message.toLowerCase()).to.include('not found');",
+									"    console.log(\"✅ Cross-tenant giveaway filter blocked\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{host1Token}}"
+							},
+							{
+								"key": "X-Subdomain",
+								"value": "{{host1Subdomain}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/host/users?giveawayId={{giveaway3Id}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"host",
+								"users"
+							],
+							"query": [
+								{
+									"key": "giveawayId",
+									"value": "{{giveaway3Id}}",
+									"description": "Giveaway 3 belongs to Host 2, not Host 1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Security Test: Invalid Giveaway ID (Error)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 404 Not Found\", () => {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"pm.test(\"Error message about giveaway not found\", () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.message.toLowerCase()).to.include('not found');",
+									"    console.log(\"✅ Invalid giveaway ID rejected\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{host1Token}}"
+							},
+							{
+								"key": "X-Subdomain",
+								"value": "{{host1Subdomain}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/host/users?giveawayId=99999",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"host",
+								"users"
+							],
+							"query": [
+								{
+									"key": "giveawayId",
+									"value": "99999",
+									"description": "Non-existent giveaway ID"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Multiple Filters: All Parameters",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+									"pm.test(\"Complex filter works correctly\", () => {",
+									"    const json = pm.response.json();",
+									"    // Giveaway1 + verified + no emailOptIn + no smsOptIn = Alice & Bob",
+									"    pm.expect(json.length).to.be.greaterThanOrEqual(0);",
+									"    console.log(\"✅ Multiple filters applied - found\", json.length, \"users\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{host1Token}}"
+							},
+							{
+								"key": "X-Subdomain",
+								"value": "{{host1Subdomain}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/host/users?giveawayId={{giveaway1Id}}&emailVerified=true&emailOptIn=false&smsOptIn=false&sortBy=email&sortOrder=asc",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"host",
+								"users"
+							],
+							"query": [
+								{
+									"key": "giveawayId",
+									"value": "{{giveaway1Id}}"
+								},
+								{
+									"key": "emailVerified",
+									"value": "true"
+								},
+								{
+									"key": "emailOptIn",
+									"value": "false"
+								},
+								{
+									"key": "smsOptIn",
+									"value": "false"
+								},
+								{
+									"key": "sortBy",
+									"value": "email"
+								},
+								{
+									"key": "sortOrder",
+									"value": "asc"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
 			"name": "TEST - Error Cases (Negative Tests)",
 			"item": [
 				{

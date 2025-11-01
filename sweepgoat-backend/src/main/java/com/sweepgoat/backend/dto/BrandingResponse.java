@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GiveawayEntryRequest {
-    private Integer pointsToAdd;   // Number of points to add for regular entries
+public class BrandingResponse {
+    private String logoUrl;
+    private String primaryColor;
 }
