@@ -33,15 +33,17 @@ public class RootController {
 
         // Public endpoints (no auth required)
         Map<String, String> publicEndpoints = new HashMap<>();
-        publicEndpoints.put("List Giveaways", "GET /api/public/giveaways");
+        publicEndpoints.put("List Giveaways (Paginated)", "GET /api/public/giveaways?page={page}&size={size}&status={status}");
         publicEndpoints.put("Get Giveaway Details", "GET /api/public/giveaways/{id}");
         endpoints.put("public", publicEndpoints);
 
         // User endpoints (USER auth required)
         Map<String, String> userEndpoints = new HashMap<>();
         userEndpoints.put("View My Entries", "GET /api/user/my-entries");
+        userEndpoints.put("View My Giveaway History (Paginated)", "GET /api/user/my-giveaway-entries?page=0&size=5");
         userEndpoints.put("Claim Free Entry (1 point)", "POST /api/user/giveaways/{id}/enter/free");
         userEndpoints.put("Add Entry (Paid)", "POST /api/user/giveaways/{id}/enter");
+        userEndpoints.put("Change Password", "POST /api/user/change-password");
         userEndpoints.put("Delete My Account", "DELETE /api/user/account");
         endpoints.put("user", userEndpoints);
 
@@ -57,6 +59,7 @@ public class RootController {
         hostEndpoints.put("View All Users (Paginated)", "GET /api/host/users?page={page}&size={size}&sortBy={field}&sortOrder={asc|desc}");
         hostEndpoints.put("Get Branding Settings", "GET /api/host/branding");
         hostEndpoints.put("Update Branding", "PATCH /api/host/branding");
+        hostEndpoints.put("Change Password", "POST /api/host/change-password");
         hostEndpoints.put("Delete My Account", "DELETE /api/host/account");
         endpoints.put("host", hostEndpoints);
 
@@ -73,9 +76,12 @@ public class RootController {
         notes.put("subdomain", "Include X-Subdomain header for subdomain-specific requests");
         notes.put("authentication", "Include Authorization: Bearer {token} header for protected endpoints");
         notes.put("email_verification", "Both hosts and users must verify email with 6-digit code before login. Codes expire after 24 hours.");
+        notes.put("public_giveaway_pagination", "GET /api/public/giveaways supports pagination (default: page=0, size=5) and optional status filter (ACTIVE, ENDED, CANCELLED)");
         notes.put("user_pagination", "GET /api/host/users supports pagination: page (default: 0), size (default: 50)");
         notes.put("user_sorting", "GET /api/host/users supports sorting by: lastLoginAt, createdAt, email, firstName, lastName (default: createdAt desc)");
+        notes.put("user_giveaway_history", "GET /api/user/my-giveaway-entries supports pagination (default: page=0, size=5). Returns giveaway history with status: ACTIVE, WON, or ENDED.");
         notes.put("branding", "PATCH /api/host/branding allows updating logoUrl and/or primaryColor (hex format). Default color: #FFFF00 (yellow)");
+        notes.put("password_change", "POST /api/user/change-password and POST /api/host/change-password require currentPassword and newPassword (min 8 chars). New password must differ from current.");
         response.put("notes", notes);
 
         return response;

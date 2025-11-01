@@ -1,6 +1,8 @@
 package com.sweepgoat.backend.repository;
 
 import com.sweepgoat.backend.model.GiveawayEntry;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -27,4 +29,10 @@ public interface GiveawayEntryRepository extends JpaRepository<GiveawayEntry, Lo
 
     @Query("SELECT COUNT(ge) FROM GiveawayEntry ge WHERE ge.giveaway.id = :giveawayId")
     Long countEntriesByGiveawayId(@Param("giveawayId") Long giveawayId);
+
+    @Query("SELECT ge FROM GiveawayEntry ge " +
+           "JOIN FETCH ge.giveaway g " +
+           "WHERE ge.user.id = :userId " +
+           "ORDER BY g.endDate DESC")
+    Page<GiveawayEntry> findByUserIdOrderByGiveawayEndDateDesc(@Param("userId") Long userId, Pageable pageable);
 }

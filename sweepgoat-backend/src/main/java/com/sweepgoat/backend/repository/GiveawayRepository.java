@@ -1,6 +1,8 @@
 package com.sweepgoat.backend.repository;
 
 import com.sweepgoat.backend.model.Giveaway;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -24,4 +26,9 @@ public interface GiveawayRepository extends JpaRepository<Giveaway, Long> {
         LocalDateTime endCheck,
         LocalDateTime startCheck
     );
+
+    // Paginated queries
+    Page<Giveaway> findByHostId(Long hostId, Pageable pageable);
+
+    Page<Giveaway> findByHostIdAndStatus(Long hostId, String status, Pageable pageable);
 }

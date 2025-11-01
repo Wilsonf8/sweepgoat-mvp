@@ -1,6 +1,7 @@
 package com.sweepgoat.backend.service;
 
 import com.sweepgoat.backend.dto.BrandingResponse;
+import com.sweepgoat.backend.dto.ChangePasswordRequest;
 import com.sweepgoat.backend.dto.HostLoginRequest;
 import com.sweepgoat.backend.dto.HostLoginResponse;
 import com.sweepgoat.backend.dto.HostRegisterRequest;
@@ -222,6 +223,32 @@ public class HostAuthService {
             .orElseThrow(() -> new ResourceNotFoundException("Host not found"));
 
         hostRepository.delete(host);
+    }
+
+    /**
+     * Change host password (HOST auth required)
+     */
+    @Transactional
+    public MessageResponse changePassword(Long hostId, ChangePasswordRequest request) {
+        // Find host
+        Host host = hostRepository.findById(hostId)
+            .orElseThrow(() -> new ResourceNotFoundException("Host not found"));
+
+        // Verify current password
+        if (!passwordEncoder.matches(request.getCurrentPassword(), host.getPasswordHash())) {
+            throw new InvalidCredentialsException("Current password is incorrect");
+        }
+
+        // Check that new password is different from current
+        if (request.getCurrentPassword().equals(request.getNewPassword())) {
+            throw new InvalidCredentialsException("New password must be different from current password");
+        }
+
+        // Update password
+        host.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
+        hostRepository.save(host);
+
+        return new MessageResponse("Password changed successfully!");
     }
 
     /**

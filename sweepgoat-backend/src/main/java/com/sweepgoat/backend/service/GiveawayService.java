@@ -4,6 +4,7 @@ import com.sweepgoat.backend.dto.CreateGiveawayRequest;
 import com.sweepgoat.backend.dto.GiveawayDetailsResponse;
 import com.sweepgoat.backend.dto.GiveawayListResponse;
 import com.sweepgoat.backend.dto.GiveawayStatsResponse;
+import com.sweepgoat.backend.dto.PaginatedResponse;
 import com.sweepgoat.backend.exception.ResourceNotFoundException;
 import com.sweepgoat.backend.model.Giveaway;
 import com.sweepgoat.backend.model.Host;
@@ -11,6 +12,8 @@ import com.sweepgoat.backend.repository.GiveawayEntryRepository;
 import com.sweepgoat.backend.repository.GiveawayRepository;
 import com.sweepgoat.backend.repository.HostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -196,6 +199,44 @@ public class GiveawayService {
 
         // Now delete the giveaway
         giveawayRepository.delete(giveaway);
+    }
+
+    /**
+     * Get giveaways by subdomain with pagination and optional status filter (PUBLIC - no auth required)
+     * Used for displaying giveaways on the tenant frontend with pagination
+     */
+    public PaginatedResponse<GiveawayListResponse> getGiveawaysBySubdomain(
+        String subdomain,
+        String status,  // "ENDED", "ACTIVE", "CANCELLED", or null for all
+        Pageable pageable
+    ) {
+        // Find host by subdomain
+        Host host = hostRepository.findBySubdomain(subdomain)
+            .orElseThrow(() -> new ResourceNotFoundException("Subdomain not found: " + subdomain));
+
+        // Get paginated giveaways - with or without status filter
+        Page<Giveaway> giveawaysPage;
+        if (status != null && !status.isEmpty()) {
+            giveawaysPage = giveawayRepository.findByHostIdAndStatus(host.getId(), status, pageable);
+        } else {
+            giveawaysPage = giveawayRepository.findByHostId(host.getId(), pageable);
+        }
+
+        // Map to response DTOs
+        List<GiveawayListResponse> data = giveawaysPage.getContent().stream()
+            .map(this::mapToListResponse)
+            .collect(Collectors.toList());
+
+        // Build paginated response
+        return new PaginatedResponse<>(
+            data,
+            giveawaysPage.getNumber(),
+            giveawaysPage.getTotalPages(),
+            giveawaysPage.getTotalElements(),
+            giveawaysPage.getSize(),
+            giveawaysPage.hasNext(),
+            giveawaysPage.hasPrevious()
+        );
     }
 
     /**

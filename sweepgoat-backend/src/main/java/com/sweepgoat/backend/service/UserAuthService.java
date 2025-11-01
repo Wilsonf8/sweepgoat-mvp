@@ -248,6 +248,32 @@ public class UserAuthService {
     }
 
     /**
+     * Change user password (USER auth required)
+     */
+    @Transactional
+    public MessageResponse changePassword(Long userId, ChangePasswordRequest request) {
+        // Find user
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        // Verify current password
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPasswordHash())) {
+            throw new InvalidCredentialsException("Current password is incorrect");
+        }
+
+        // Check that new password is different from current
+        if (request.getCurrentPassword().equals(request.getNewPassword())) {
+            throw new InvalidCredentialsException("New password must be different from current password");
+        }
+
+        // Update password
+        user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+
+        return new MessageResponse("Password changed successfully!");
+    }
+
+    /**
      * Get all users for a host (HOST auth required)
      * Supports pagination, filtering, and sorting
      *

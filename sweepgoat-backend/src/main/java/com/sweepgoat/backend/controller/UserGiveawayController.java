@@ -1,13 +1,19 @@
 package com.sweepgoat.backend.controller;
 
+import com.sweepgoat.backend.dto.ChangePasswordRequest;
 import com.sweepgoat.backend.dto.GiveawayEntryRequest;
 import com.sweepgoat.backend.dto.GiveawayEntryResponse;
 import com.sweepgoat.backend.dto.MessageResponse;
+import com.sweepgoat.backend.dto.PaginatedResponse;
 import com.sweepgoat.backend.dto.UserEntryResponse;
+import com.sweepgoat.backend.dto.UserGiveawayEntryResponse;
 import com.sweepgoat.backend.service.GiveawayEntryService;
 import com.sweepgoat.backend.service.UserAuthService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -96,6 +102,61 @@ public class UserGiveawayController {
         List<UserEntryResponse> entries = giveawayEntryService.getUserEntries(userId);
 
         return ResponseEntity.ok(entries);
+    }
+
+    /**
+     * GET /api/user/my-giveaway-entries
+     * Get user's giveaway entry history with pagination
+     *
+     * Returns all giveaways the user has entered (current and past)
+     * Sorted by giveaway end date descending (most recent first)
+     *
+     * Query Parameters:
+     * - page: Page number (0-indexed, default: 0)
+     * - size: Page size (default: 5)
+     */
+    @GetMapping("/my-giveaway-entries")
+    public ResponseEntity<PaginatedResponse<UserGiveawayEntryResponse>> getMyGiveawayEntries(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            HttpServletRequest request) {
+
+        // Extract userId from JWT (set by JwtAuthenticationFilter)
+        Long userId = (Long) request.getAttribute("userId");
+
+        if (userId == null) {
+            throw new RuntimeException("Authentication required");
+        }
+
+        // Create pageable object
+        Pageable pageable = PageRequest.of(page, size);
+
+        // Get paginated entries
+        PaginatedResponse<UserGiveawayEntryResponse> response =
+            giveawayEntryService.getUserGiveawayEntries(userId, pageable);
+
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * POST /api/user/change-password
+     * Change the authenticated user's password
+     */
+    @PostMapping("/change-password")
+    public ResponseEntity<MessageResponse> changePassword(
+            @Valid @RequestBody ChangePasswordRequest request,
+            HttpServletRequest httpRequest) {
+
+        // Extract userId from JWT (set by JwtAuthenticationFilter)
+        Long userId = (Long) httpRequest.getAttribute("userId");
+
+        if (userId == null) {
+            throw new RuntimeException("Authentication required");
+        }
+
+        MessageResponse response = userAuthService.changePassword(userId, request);
+
+        return ResponseEntity.ok(response);
     }
 
     /**

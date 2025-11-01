@@ -47,9 +47,8 @@ public class Giveaway {
     @Column(nullable = false)
     private String status = "ACTIVE"; // ACTIVE, ENDED, CANCELLED
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "winner_id", nullable = true)
-    private User winner; // Null until winner is declared
+    @Column(name = "winner_id")
+    private Long winnerId; // Null until winner is declared
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

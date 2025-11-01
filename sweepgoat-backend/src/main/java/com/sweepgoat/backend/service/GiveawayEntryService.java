@@ -2,7 +2,9 @@ package com.sweepgoat.backend.service;
 
 import com.sweepgoat.backend.dto.GiveawayEntryLeaderboardResponse;
 import com.sweepgoat.backend.dto.GiveawayEntryResponse;
+import com.sweepgoat.backend.dto.PaginatedResponse;
 import com.sweepgoat.backend.dto.UserEntryResponse;
+import com.sweepgoat.backend.dto.UserGiveawayEntryResponse;
 import com.sweepgoat.backend.exception.GiveawayEntryException;
 import com.sweepgoat.backend.exception.ResourceNotFoundException;
 import com.sweepgoat.backend.model.Giveaway;
@@ -12,6 +14,8 @@ import com.sweepgoat.backend.repository.GiveawayEntryRepository;
 import com.sweepgoat.backend.repository.GiveawayRepository;
 import com.sweepgoat.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -277,6 +281,69 @@ public class GiveawayEntryService {
             giveaway.getImageUrl(),
             giveaway.getEndDate(),
             giveaway.getStatus()
+        );
+    }
+
+    /**
+     * Get user's giveaway entry history with pagination
+     * Returns all giveaways the user has entered (current and past)
+     * Sorted by giveaway end date descending (most recent first)
+     */
+    public PaginatedResponse<UserGiveawayEntryResponse> getUserGiveawayEntries(Long userId, Pageable pageable) {
+        // Verify user exists
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        // Get paginated entries sorted by giveaway end date desc
+        Page<GiveawayEntry> entriesPage = giveawayEntryRepository
+            .findByUserIdOrderByGiveawayEndDateDesc(userId, pageable);
+
+        // Map to response DTOs
+        List<UserGiveawayEntryResponse> data = entriesPage.getContent().stream()
+            .map(this::mapToUserGiveawayEntryResponse)
+            .collect(Collectors.toList());
+
+        // Build paginated response
+        return new PaginatedResponse<>(
+            data,
+            entriesPage.getNumber(),
+            entriesPage.getTotalPages(),
+            entriesPage.getTotalElements(),
+            entriesPage.getSize(),
+            entriesPage.hasNext(),
+            entriesPage.hasPrevious()
+        );
+    }
+
+    /**
+     * Map GiveawayEntry to UserGiveawayEntryResponse
+     * Determines status based on giveaway state and winner
+     */
+    private UserGiveawayEntryResponse mapToUserGiveawayEntryResponse(GiveawayEntry entry) {
+        Giveaway giveaway = entry.getGiveaway();
+        String status;
+        Long winnerId = giveaway.getWinnerId();
+
+        // Determine status
+        if ("ACTIVE".equals(giveaway.getStatus())) {
+            status = "ACTIVE";
+        } else if ("ENDED".equals(giveaway.getStatus()) || "CANCELLED".equals(giveaway.getStatus())) {
+            // Check if user won this giveaway
+            if (winnerId != null && winnerId.equals(entry.getUser().getId())) {
+                status = "WON";
+            } else {
+                status = "ENDED";
+            }
+        } else {
+            status = "ENDED";
+        }
+
+        return new UserGiveawayEntryResponse(
+            giveaway.getId(),
+            giveaway.getTitle(),
+            giveaway.getEndDate(),
+            status,
+            winnerId
         );
     }
 
