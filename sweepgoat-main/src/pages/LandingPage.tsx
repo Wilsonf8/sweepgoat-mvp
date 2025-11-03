@@ -1,17 +1,18 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Navigation } from '../components/Navigation';
 import { Section } from '../components/Section';
 import { Button } from '../components/Button';
 
 export const LandingPage: React.FC = () => {
+  const navigate = useNavigate();
+
   const handleSignUpClick = () => {
-    // TODO: Navigate to /signup
-    console.log('Navigate to signup');
+    navigate('/signup');
   };
 
   const handleLoginClick = () => {
-    // TODO: Navigate to /login
-    console.log('Navigate to login');
+    navigate('/login');
   };
 
   return (
@@ -22,24 +23,19 @@ export const LandingPage: React.FC = () => {
       <Section background="gradient" size="lg" className="pt-32 md:pt-40">
         <div className="text-center max-w-4xl mx-auto">
           {/* Badge/Tag */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/20 border border-purple-500/30 text-purple-300 text-sm font-medium mb-6 backdrop-blur-sm">
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-            </svg>
+          <div className="inline-block px-3 py-1 text-xs font-medium tracking-wider uppercase text-zinc-500 mb-8">
             Your Complete Giveaway Platform
           </div>
 
           {/* Main Headline */}
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight">
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-light text-white mb-8 leading-tight tracking-tight">
             Run Legal Giveaways
             <br />
-            <span className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-              Under Your Brand
-            </span>
+            <span className="font-normal">Under Your Brand</span>
           </h1>
 
           {/* Subheadline */}
-          <p className="text-xl md:text-2xl text-gray-400 mb-10 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-lg md:text-xl text-zinc-400 mb-12 max-w-2xl mx-auto leading-relaxed font-light">
             Launch white-labeled giveaway campaigns, manage your CRM, and grow your audience—all from one powerful platform.
           </p>
 
@@ -54,38 +50,24 @@ export const LandingPage: React.FC = () => {
           </div>
 
           {/* Trust Indicators */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-gray-400">
-            <div className="flex items-center gap-2">
-              <svg className="w-5 h-5 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              <span>No credit card required</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <svg className="w-5 h-5 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              <span>Setup in 5 minutes</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <svg className="w-5 h-5 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              <span>Cancel anytime</span>
-            </div>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-8 text-xs text-zinc-500 font-light">
+            <span>No credit card required</span>
+            <span className="hidden sm:inline text-zinc-700">•</span>
+            <span>Setup in 5 minutes</span>
+            <span className="hidden sm:inline text-zinc-700">•</span>
+            <span>Cancel anytime</span>
           </div>
         </div>
 
         {/* Hero Visual/Screenshot Placeholder */}
-        <div className="mt-16 max-w-5xl mx-auto">
-          <div className="rounded-2xl shadow-2xl shadow-purple-500/10 overflow-hidden bg-gray-900 border border-gray-800">
-            <div className="aspect-video bg-gradient-to-br from-gray-900 via-gray-800 to-purple-900/20 flex items-center justify-center">
-              <div className="text-center text-gray-500">
-                <svg className="w-24 h-24 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        <div className="mt-24 max-w-5xl mx-auto">
+          <div className="rounded-lg overflow-hidden bg-zinc-950 border border-zinc-800">
+            <div className="aspect-video bg-zinc-900 flex items-center justify-center">
+              <div className="text-center text-zinc-600">
+                <svg className="w-16 h-16 mx-auto mb-4 stroke-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                <p className="text-lg font-medium text-gray-400">Dashboard Preview</p>
-                <p className="text-sm">Coming soon</p>
+                <p className="text-sm font-light text-zinc-500">Dashboard Preview</p>
               </div>
             </div>
           </div>
@@ -94,11 +76,11 @@ export const LandingPage: React.FC = () => {
 
       {/* White Labeling Section */}
       <Section id="white-labeling" background="white" size="md">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+        <div className="text-center mb-20">
+          <h2 className="text-3xl md:text-4xl font-light text-white mb-4 tracking-tight">
             Complete White Labeling
           </h2>
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+          <p className="text-base text-zinc-500 max-w-xl mx-auto font-light">
             Make it yours. Customize colors, add your logo, and run giveaways that match your brand perfectly.
           </p>
         </div>
@@ -121,10 +103,10 @@ export const LandingPage: React.FC = () => {
               description: 'Your users see only your brand—no Sweepgoat watermarks or logos anywhere.',
             },
           ].map((feature, idx) => (
-            <div key={idx} className="bg-gray-900 rounded-xl p-8 border border-gray-800 hover:border-purple-500 hover:shadow-lg hover:shadow-purple-500/20 transition-all">
-              <div className="text-gray-500 mb-4">{feature.icon}</div>
-              <h3 className="text-xl font-semibold text-white mb-3">{feature.title}</h3>
-              <p className="text-gray-400 leading-relaxed">{feature.description}</p>
+            <div key={idx} className="p-8 border-l border-zinc-800">
+              <div className="text-zinc-600 mb-6">{feature.icon}</div>
+              <h3 className="text-lg font-normal text-white mb-3">{feature.title}</h3>
+              <p className="text-sm text-zinc-500 leading-relaxed font-light">{feature.description}</p>
             </div>
           ))}
         </div>
@@ -132,11 +114,11 @@ export const LandingPage: React.FC = () => {
 
       {/* CRM & Marketing Section */}
       <Section id="crm-marketing" background="gray" size="md">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+        <div className="text-center mb-20">
+          <h2 className="text-3xl md:text-4xl font-light text-white mb-4 tracking-tight">
             Built-In CRM & Marketing Tools
           </h2>
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+          <p className="text-base text-zinc-500 max-w-xl mx-auto font-light">
             Manage your audience, segment users, and run targeted email campaigns—all in one place.
           </p>
         </div>
@@ -152,15 +134,13 @@ export const LandingPage: React.FC = () => {
               features: ['Segment your audience', 'Send targeted emails', 'Track open rates', 'A/B testing'],
             },
           ].map((section, idx) => (
-            <div key={idx} className="bg-gray-900 rounded-xl p-8 border border-gray-800">
-              <h3 className="text-2xl font-semibold text-white mb-6">{section.title}</h3>
+            <div key={idx} className="p-10 border border-zinc-800">
+              <h3 className="text-xl font-normal text-white mb-8">{section.title}</h3>
               <ul className="space-y-4">
                 {section.features.map((feature, featureIdx) => (
                   <li key={featureIdx} className="flex items-start gap-3">
-                    <svg className="w-6 h-6 text-purple-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-gray-300">{feature}</span>
+                    <span className="text-zinc-700 mt-1">—</span>
+                    <span className="text-sm text-zinc-400 font-light">{feature}</span>
                   </li>
                 ))}
               </ul>
@@ -171,28 +151,28 @@ export const LandingPage: React.FC = () => {
 
       {/* Giveaway Setup Section */}
       <Section id="giveaway-setup" background="white" size="md">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+        <div className="text-center mb-20">
+          <h2 className="text-3xl md:text-4xl font-light text-white mb-4 tracking-tight">
             Set Up Giveaways in Minutes
           </h2>
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+          <p className="text-base text-zinc-500 max-w-xl mx-auto font-light">
             Create, customize, and launch giveaways with an intuitive interface designed for speed.
           </p>
         </div>
 
-        <div className="max-w-3xl mx-auto bg-gradient-to-br from-gray-900 to-purple-950/50 rounded-2xl p-12 border border-gray-800">
-          <div className="space-y-6">
+        <div className="max-w-2xl mx-auto border-l border-zinc-800 pl-12">
+          <div className="space-y-10">
             {[
-              '1. Create your giveaway with title, description, and prize details',
-              '2. Set start and end dates',
-              '3. Configure entry mechanics (free entries, paid points, etc.)',
-              '4. Launch and share with your audience',
+              'Create your giveaway with title, description, and prize details',
+              'Set start and end dates',
+              'Configure entry mechanics (free entries, paid points, etc.)',
+              'Launch and share with your audience',
             ].map((step, idx) => (
-              <div key={idx} className="flex items-start gap-4">
-                <div className="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold flex-shrink-0">
-                  {idx + 1}
+              <div key={idx} className="flex items-start gap-6">
+                <div className="text-zinc-700 text-sm font-light flex-shrink-0 w-8">
+                  0{idx + 1}
                 </div>
-                <p className="text-lg text-gray-200 pt-0.5">{step}</p>
+                <p className="text-sm text-zinc-400 font-light pt-0.5">{step}</p>
               </div>
             ))}
           </div>
@@ -201,11 +181,11 @@ export const LandingPage: React.FC = () => {
 
       {/* Get Started Section */}
       <Section id="get-started" background="gradient" size="md">
-        <div className="text-center max-w-3xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+        <div className="text-center max-w-2xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-light text-white mb-6 tracking-tight">
             Ready to Launch Your First Giveaway?
           </h2>
-          <p className="text-xl text-gray-400 mb-10">
+          <p className="text-base text-zinc-500 mb-12 font-light">
             Join hundreds of brands using Sweepgoat to grow their audience and boost engagement.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -221,11 +201,11 @@ export const LandingPage: React.FC = () => {
 
       {/* Legal Compliance Section */}
       <Section id="legal-compliance" background="white" size="md">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+        <div className="text-center mb-20">
+          <h2 className="text-3xl md:text-4xl font-light text-white mb-4 tracking-tight">
             Legal & Compliant
           </h2>
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+          <p className="text-base text-zinc-500 max-w-xl mx-auto font-light">
             Run giveaways with confidence. We help you stay compliant with regulations.
           </p>
         </div>
@@ -249,9 +229,9 @@ export const LandingPage: React.FC = () => {
               label: 'Fair & Transparent'
             },
           ].map((item, idx) => (
-            <div key={idx} className="text-center p-6 rounded-xl border border-gray-800 bg-gray-900">
-              <div className="text-gray-500 mb-3 flex justify-center">{item.icon}</div>
-              <p className="font-semibold text-white">{item.label}</p>
+            <div key={idx} className="text-center p-8">
+              <div className="text-zinc-700 mb-4 flex justify-center">{item.icon}</div>
+              <p className="text-xs font-light text-zinc-500 uppercase tracking-wider">{item.label}</p>
             </div>
           ))}
         </div>

@@ -3,3 +3,21 @@
 
 # IDEs
 .idea/
+
+# Environment variables (all subprojects)
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+.env*.local
+**/.env.local
+**/.env.development
+**/.env.production
+**/.env.test
+**/.env*.local
+
+# Application properties (sensitive)
+**/application-dev.properties
+**/application-local.properties
+**/application-*.local.properties

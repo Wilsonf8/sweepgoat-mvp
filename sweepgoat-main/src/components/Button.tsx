@@ -21,19 +21,19 @@ export const Button: React.FC<ButtonProps> = ({
   className = '',
   ...props
 }) => {
-  const baseStyles = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer';
+  const baseStyles = 'inline-flex items-center justify-center font-light rounded transition-all duration-300 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer';
 
   const variantStyles = {
-    primary: 'bg-purple-600 text-white hover:bg-purple-700 focus:ring-purple-500 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40',
-    secondary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40',
-    outline: 'border-2 border-gray-700 text-gray-300 hover:border-purple-500 hover:bg-purple-500/10 focus:ring-purple-500',
-    ghost: 'text-gray-300 hover:bg-gray-800 hover:text-white focus:ring-gray-700',
+    primary: 'bg-white text-black hover:bg-zinc-200',
+    secondary: 'bg-zinc-800 text-white hover:bg-zinc-700',
+    outline: 'border border-zinc-700 text-zinc-300 hover:border-white hover:text-white',
+    ghost: 'text-zinc-400 hover:text-white',
   };
 
   const sizeStyles = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-5 py-2.5 text-base',
-    lg: 'px-6 py-3 text-lg',
+    sm: 'px-4 py-2 text-xs',
+    md: 'px-6 py-3 text-sm',
+    lg: 'px-8 py-4 text-sm',
   };
 
   const widthStyle = fullWidth ? 'w-full' : '';

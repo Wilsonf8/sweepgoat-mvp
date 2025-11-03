@@ -17,14 +17,14 @@ export const Section: React.FC<SectionProps> = ({
 }) => {
   const bgStyles = {
     white: 'bg-black',
-    gray: 'bg-gray-900',
-    gradient: 'bg-gradient-to-br from-gray-900 via-black to-purple-950',
+    gray: 'bg-zinc-950',
+    gradient: 'bg-black',
   };
 
   const sizeStyles = {
-    sm: 'py-12 md:py-16',
-    md: 'py-16 md:py-24',
-    lg: 'py-24 md:py-32',
+    sm: 'py-16 md:py-20',
+    md: 'py-20 md:py-32',
+    lg: 'py-32 md:py-40',
   };
 
   return (

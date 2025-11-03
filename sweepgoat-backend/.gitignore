@@ -35,6 +35,12 @@ build/
 ### Environment Variables ###
 .env
 .env.local
+.env.development
+.env.production
+.env.test
+.env*.local
 
 ### Development Profile (contains local credentials) ###
 application-dev.properties
+application-local.properties
+application-*.local.properties

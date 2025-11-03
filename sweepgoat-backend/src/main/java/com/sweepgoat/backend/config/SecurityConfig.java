@@ -1,6 +1,7 @@
 package com.sweepgoat.backend.config;
 
 import com.sweepgoat.backend.security.JwtAuthenticationFilter;
+import com.sweepgoat.backend.security.SubdomainValidationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +25,9 @@ public class SecurityConfig {
 
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    @Autowired
+    private SubdomainValidationFilter subdomainValidationFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -55,7 +59,10 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
 
-            // Add JWT filter before Spring Security's authentication filter
+            // Add filters in order:
+            // 1. Subdomain validation filter (runs BEFORE authentication)
+            // 2. JWT authentication filter
+            .addFilterBefore(subdomainValidationFilter, UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -70,29 +77,33 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Allow requests from frontend (update these URLs based on your setup)
+        // Allow requests from frontend (local development + production)
         configuration.setAllowedOriginPatterns(List.of(
+            // Local development - simple localhost
             "http://localhost:*",
             "http://127.0.0.1:*",
-            "https://*.sweepgoat.com"
+            // Local development - subdomain patterns
+            "http://*.localhost:*",
+            "http://*.sweepgoat.local:*",
+            // Production
+            "https://*.sweepgoat.com",
+            "https://sweepgoat.com"
         ));
 
         // Allow common HTTP methods
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
 
-        // Allow common headers
-        configuration.setAllowedHeaders(Arrays.asList(
-            "Authorization",
-            "Content-Type",
-            "X-Subdomain",
-            "Accept"
-        ));
+        // Allow all headers (important for custom headers like X-Subdomain)
+        configuration.setAllowedHeaders(Arrays.asList("*"));
 
         // Allow credentials (cookies, authorization headers)
         configuration.setAllowCredentials(true);
 
         // Expose Authorization header to frontend
         configuration.setExposedHeaders(List.of("Authorization"));
+
+        // Cache preflight responses for 1 hour
+        configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

@@ -50,6 +50,9 @@ public class HostAuthService {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private SubdomainValidationService subdomainValidationService;
+
     /**
      * Register a new host (can only be done on main domain: sweepgoat.com)
      * Domain validation should be handled in controller
@@ -57,21 +60,27 @@ public class HostAuthService {
      */
     @Transactional
     public MessageResponse registerHost(HostRegisterRequest request) {
-        // Check if email already exists
-        if (hostRepository.existsByEmail(request.getEmail())) {
+        // Convert email to lowercase for consistency
+        String emailLowercase = request.getEmail().toLowerCase().trim();
+
+        // Convert subdomain to lowercase for consistency
+        String subdomainLowercase = request.getSubdomain().toLowerCase().trim();
+
+        // Check if email already exists (case-insensitive)
+        if (hostRepository.existsByEmail(emailLowercase)) {
             throw new DuplicateResourceException("A host with this email already exists");
         }
 
-        // Check if subdomain already exists
-        if (hostRepository.existsBySubdomain(request.getSubdomain())) {
+        // Check if subdomain already exists (case-insensitive)
+        if (hostRepository.existsBySubdomain(subdomainLowercase)) {
             throw new DuplicateResourceException("This subdomain is already taken");
         }
 
         // Create new host
         Host host = new Host();
-        host.setSubdomain(request.getSubdomain());
+        host.setSubdomain(subdomainLowercase);
         host.setCompanyName(request.getCompanyName());
-        host.setEmail(request.getEmail());
+        host.setEmail(emailLowercase);
         host.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         host.setIsActive(true);
 
@@ -96,8 +105,11 @@ public class HostAuthService {
      * Throws EmailNotVerifiedException if email not verified
      */
     public HostLoginResponse authenticateHost(HostLoginRequest request) {
+        // Convert email to lowercase for consistency
+        String emailLowercase = request.getEmail().toLowerCase().trim();
+
         // Find host by email
-        Host host = hostRepository.findByEmail(request.getEmail())
+        Host host = hostRepository.findByEmail(emailLowercase)
             .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
 
         // Verify password
@@ -134,8 +146,11 @@ public class HostAuthService {
      */
     @Transactional
     public MessageResponse verifyHostEmail(VerifyEmailRequest request) {
+        // Convert email to lowercase for consistency
+        String emailLowercase = request.getEmail().toLowerCase().trim();
+
         // Find host by email
-        Host host = hostRepository.findByEmail(request.getEmail())
+        Host host = hostRepository.findByEmail(emailLowercase)
             .orElseThrow(() -> new ResourceNotFoundException("Host not found"));
 
         // Check if already verified
@@ -159,6 +174,9 @@ public class HostAuthService {
         host.setVerificationCodeExpiresAt(null);
         hostRepository.save(host);
 
+        // Invalidate subdomain cache so the subdomain becomes immediately accessible
+        subdomainValidationService.invalidateSubdomainCache(host.getSubdomain());
+
         return new MessageResponse("Email verified successfully! You can now log in.");
     }
 
@@ -167,8 +185,11 @@ public class HostAuthService {
      */
     @Transactional
     public MessageResponse resendHostVerificationCode(ResendVerificationRequest request) {
+        // Convert email to lowercase for consistency
+        String emailLowercase = request.getEmail().toLowerCase().trim();
+
         // Find host by email
-        Host host = hostRepository.findByEmail(request.getEmail())
+        Host host = hostRepository.findByEmail(emailLowercase)
             .orElseThrow(() -> new ResourceNotFoundException("Host not found"));
 
         // Check if already verified

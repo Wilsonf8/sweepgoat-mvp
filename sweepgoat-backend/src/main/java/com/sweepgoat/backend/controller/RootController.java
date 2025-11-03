@@ -33,6 +33,8 @@ public class RootController {
 
         // Public endpoints (no auth required)
         Map<String, String> publicEndpoints = new HashMap<>();
+        publicEndpoints.put("Validate Subdomain", "GET /api/public/subdomain/validate");
+        publicEndpoints.put("Get Subdomain Branding", "GET /api/public/subdomain/branding");
         publicEndpoints.put("List Giveaways (Paginated)", "GET /api/public/giveaways?page={page}&size={size}&status={status}");
         publicEndpoints.put("Get Giveaway Details", "GET /api/public/giveaways/{id}");
         endpoints.put("public", publicEndpoints);
@@ -74,6 +76,7 @@ public class RootController {
         // Add notes
         Map<String, String> notes = new HashMap<>();
         notes.put("subdomain", "Include X-Subdomain header for subdomain-specific requests");
+        notes.put("subdomain_validation", "GET /api/public/subdomain/validate checks if subdomain exists (returns 200 if exists, 404 if not)");
         notes.put("authentication", "Include Authorization: Bearer {token} header for protected endpoints");
         notes.put("email_verification", "Both hosts and users must verify email with 6-digit code before login. Codes expire after 24 hours.");
         notes.put("public_giveaway_pagination", "GET /api/public/giveaways supports pagination (default: page=0, size=5) and optional status filter (ACTIVE, ENDED, CANCELLED)");

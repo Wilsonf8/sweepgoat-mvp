@@ -49,7 +49,7 @@ export const Navigation: React.FC<NavigationProps> = ({
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? 'bg-black/80 backdrop-blur-md shadow-lg shadow-purple-500/10 border-b border-gray-800'
+          ? 'bg-black/80 border-b border-zinc-900'
           : 'bg-transparent'
       }`}
     >
@@ -71,7 +71,7 @@ export const Navigation: React.FC<NavigationProps> = ({
               <button
                 key={link.id}
                 onClick={() => scrollToSection(link.id)}
-                className="text-sm font-medium text-gray-300 hover:text-purple-400 transition-colors cursor-pointer"
+                className="text-xs font-light text-zinc-500 hover:text-white transition-colors cursor-pointer uppercase tracking-wider"
               >
                 {link.label}
               </button>
@@ -90,7 +90,7 @@ export const Navigation: React.FC<NavigationProps> = ({
 
           {/* Mobile Menu Button */}
           <button
-            className="lg:hidden p-2 rounded-lg hover:bg-gray-800 text-gray-300 cursor-pointer"
+            className="lg:hidden p-2 text-zinc-500 hover:text-white cursor-pointer transition-colors"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? (
@@ -108,14 +108,14 @@ export const Navigation: React.FC<NavigationProps> = ({
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden bg-black/95 backdrop-blur-md border-t border-gray-800 shadow-lg">
+        <div className="lg:hidden bg-black/95 border-t border-zinc-900">
           <div className="container mx-auto px-4 py-4">
             <div className="flex flex-col gap-4">
               {navLinks.map((link) => (
                 <button
                   key={link.id}
                   onClick={() => scrollToSection(link.id)}
-                  className="text-left text-base font-medium text-gray-300 hover:text-purple-400 py-2 transition-colors cursor-pointer"
+                  className="text-left text-xs font-light text-zinc-500 hover:text-white py-2 transition-colors cursor-pointer uppercase tracking-wider"
                 >
                   {link.label}
                 </button>
