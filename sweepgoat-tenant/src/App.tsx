@@ -1,14 +1,27 @@
 import { Routes, Route } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { HomePage } from './pages/HomePage';
+import { LoginPage } from './pages/LoginPage';
+import { SignupPage } from './pages/SignupPage';
+import { VerifyEmailPage } from './pages/VerifyEmailPage';
 import { HostLoginPage } from './pages/HostLoginPage';
+import { HostDashboardPage } from './pages/HostDashboardPage';
+import { HostGiveawaysPage } from './pages/HostGiveawaysPage';
+import { HostCreateGiveawayPage } from './pages/HostCreateGiveawayPage';
+import { HostGiveawayDetailPage } from './pages/HostGiveawayDetailPage';
 import { SubdomainNotFoundPage } from './pages/SubdomainNotFoundPage';
 import { validateSubdomain } from './services/subdomainService';
 import { getSubdomain } from './utils/subdomain';
+import { BrandingProvider } from './context/BrandingContext';
 
 function App() {
   const [isValidating, setIsValidating] = useState(true);
   const [isValidSubdomain, setIsValidSubdomain] = useState(true);
+  const [brandingData, setBrandingData] = useState({
+    companyName: '',
+    primaryColor: '#FFFFFF',
+    subdomain: ''
+  });
 
   useEffect(() => {
     const checkSubdomain = async () => {
@@ -18,6 +31,11 @@ function App() {
       // Skip validation for localhost (no subdomain) or if we're in development
       if (!subdomain || subdomain === 'localhost') {
         console.log('Skipping validation for localhost');
+        setBrandingData({
+          companyName: 'Demo Company',
+          primaryColor: '#FFFFFF',
+          subdomain: subdomain || 'demo'
+        });
         setIsValidating(false);
         return;
       }
@@ -29,11 +47,11 @@ function App() {
 
         if (result.exists) {
           setIsValidSubdomain(true);
-          // Optionally store branding info for later use
-          if (result.branding) {
-            sessionStorage.setItem('branding', JSON.stringify(result.branding));
-            sessionStorage.setItem('companyName', result.companyName || '');
-          }
+          setBrandingData({
+            companyName: result.companyName || '',
+            primaryColor: result.branding?.primaryColor || '#FFFFFF',
+            subdomain: result.subdomain || subdomain
+          });
         } else {
           console.log('Subdomain does not exist');
           setIsValidSubdomain(false);
@@ -67,12 +85,25 @@ function App() {
     return <SubdomainNotFoundPage />;
   }
 
-  // Normal app routing
+  // Normal app routing with BrandingProvider
   return (
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/host/login" element={<HostLoginPage />} />
-    </Routes>
+    <BrandingProvider
+      companyName={brandingData.companyName}
+      primaryColor={brandingData.primaryColor}
+      subdomain={brandingData.subdomain}
+    >
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/verify-email" element={<VerifyEmailPage />} />
+        <Route path="/host/login" element={<HostLoginPage />} />
+        <Route path="/host/dashboard" element={<HostDashboardPage />} />
+        <Route path="/host/giveaways" element={<HostGiveawaysPage />} />
+        <Route path="/host/giveaways/new" element={<HostCreateGiveawayPage />} />
+        <Route path="/host/giveaways/:id" element={<HostGiveawayDetailPage />} />
+      </Routes>
+    </BrandingProvider>
   );
 }
 

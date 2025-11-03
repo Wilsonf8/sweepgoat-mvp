@@ -21,3 +21,5 @@
 **/application-dev.properties
 **/application-local.properties
 **/application-*.local.properties
+
+**.md

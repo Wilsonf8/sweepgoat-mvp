@@ -16,7 +16,7 @@ interface FormErrors {
   general?: string;
 }
 
-export function HostLoginPage() {
+export function LoginPage() {
   const navigate = useNavigate();
   const { companyName } = useBranding();
 
@@ -65,8 +65,8 @@ export function HostLoginPage() {
     setErrors({});
 
     try {
-      // Host login
-      const response = await api.post('/api/auth/host/login', formData);
+      // User login
+      const response = await api.post('/api/auth/user/login', formData);
 
       // Check if email is not verified
       if ('emailVerified' in response.data && !response.data.emailVerified) {
@@ -75,11 +75,11 @@ export function HostLoginPage() {
         return;
       }
 
-      // Host login successful
+      // User login successful
       if ('token' in response.data) {
-        localStorage.setItem('hostToken', response.data.token);
-        localStorage.setItem('userType', 'HOST');
-        navigate('/host/dashboard'); // Redirect to host dashboard
+        localStorage.setItem('userToken', response.data.token);
+        localStorage.setItem('userType', 'USER');
+        navigate('/'); // Redirect to home page
         return;
       }
     } catch (error: any) {
@@ -92,7 +92,7 @@ export function HostLoginPage() {
   const handleLoginError = (error: any) => {
     const newErrors: FormErrors = {};
 
-    console.log('Host login error:', error.response);
+    console.log('Login error:', error.response);
 
     // Check for field-specific errors
     if (error.response?.data?.fieldErrors) {
@@ -133,10 +133,10 @@ export function HostLoginPage() {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-3xl md:text-4xl font-light text-white mb-4 tracking-tight">
-            Management Login
+            Welcome Back
           </h1>
           <p className="text-base text-zinc-500 font-light">
-            Log in to manage {companyName || 'your giveaways'}
+            Log in to {companyName || 'your account'}
           </p>
         </div>
 
@@ -185,14 +185,15 @@ export function HostLoginPage() {
           </Button>
         </form>
 
-        {/* Back to Home Link */}
+        {/* Signup Link */}
         <div className="mt-8 text-center">
           <p className="text-sm text-zinc-500 font-light">
+            Don't have an account?{' '}
             <button
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/signup')}
               className="text-white hover:text-zinc-300 transition-colors"
             >
-              ← Back to home
+              Sign up
             </button>
           </p>
         </div>

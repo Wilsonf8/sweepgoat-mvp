@@ -8,21 +8,33 @@ import api from '../services/api';
 interface FormData {
   email: string;
   password: string;
+  confirmPassword: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
 }
 
 interface FormErrors {
   email?: string;
   password?: string;
+  confirmPassword?: string;
+  firstName?: string;
+  lastName?: string;
+  phoneNumber?: string;
   general?: string;
 }
 
-export function HostLoginPage() {
+export function SignupPage() {
   const navigate = useNavigate();
   const { companyName } = useBranding();
 
   const [formData, setFormData] = useState<FormData>({
     email: '',
     password: '',
+    confirmPassword: '',
+    firstName: '',
+    lastName: '',
+    phoneNumber: '',
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -40,14 +52,34 @@ export function HostLoginPage() {
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
+    if (!formData.firstName) {
+      newErrors.firstName = 'First name is required';
+    }
+
+    if (!formData.lastName) {
+      newErrors.lastName = 'Last name is required';
+    }
+
     if (!formData.email) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Invalid email format';
     }
 
+    if (!formData.phoneNumber) {
+      newErrors.phoneNumber = 'Phone number is required';
+    }
+
     if (!formData.password) {
       newErrors.password = 'Password is required';
+    } else if (formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters';
+    }
+
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = 'Please confirm your password';
+    } else if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
     }
 
     setErrors(newErrors);
@@ -65,60 +97,61 @@ export function HostLoginPage() {
     setErrors({});
 
     try {
-      // Host login
-      const response = await api.post('/api/auth/host/login', formData);
+      // User registration
+      await api.post('/api/auth/user/register', {
+        email: formData.email,
+        password: formData.password,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        phoneNumber: formData.phoneNumber,
+      });
 
-      // Check if email is not verified
-      if ('emailVerified' in response.data && !response.data.emailVerified) {
-        localStorage.setItem('pendingEmail', formData.email);
-        navigate('/verify-email');
-        return;
-      }
+      // Store email for verification page
+      localStorage.setItem('pendingEmail', formData.email);
 
-      // Host login successful
-      if ('token' in response.data) {
-        localStorage.setItem('hostToken', response.data.token);
-        localStorage.setItem('userType', 'HOST');
-        navigate('/host/dashboard'); // Redirect to host dashboard
-        return;
-      }
+      // Navigate to verification page
+      navigate('/verify-email');
     } catch (error: any) {
-      handleLoginError(error);
+      handleSignupError(error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleLoginError = (error: any) => {
+  const handleSignupError = (error: any) => {
     const newErrors: FormErrors = {};
 
-    console.log('Host login error:', error.response);
+    console.log('Signup error:', error.response);
 
     // Check for field-specific errors
     if (error.response?.data?.fieldErrors) {
       const fieldErrors = error.response.data.fieldErrors;
       if (fieldErrors.email) newErrors.email = fieldErrors.email;
       if (fieldErrors.password) newErrors.password = fieldErrors.password;
+      if (fieldErrors.firstName) newErrors.firstName = fieldErrors.firstName;
+      if (fieldErrors.lastName) newErrors.lastName = fieldErrors.lastName;
+      if (fieldErrors.phoneNumber) newErrors.phoneNumber = fieldErrors.phoneNumber;
     } else {
       // Handle general error messages
       const errorMessage = error.response?.data?.message
         || error.response?.data?.error
         || error.response?.statusText
         || error.message
-        || 'Login failed. Please try again.';
+        || 'Registration failed. Please try again.';
 
       const lowerMessage = errorMessage.toLowerCase();
 
-      // For 401 errors or credential errors, show as general error
-      if (error.response?.status === 401 ||
-          lowerMessage.includes('invalid') ||
-          lowerMessage.includes('credentials') ||
-          lowerMessage.includes('unauthorized')) {
-        newErrors.general = 'Invalid email or password';
-      } else if (lowerMessage.includes('email')) {
+      // Map errors to specific fields
+      if (lowerMessage.includes('email')) {
         newErrors.email = errorMessage;
       } else if (lowerMessage.includes('password')) {
         newErrors.password = errorMessage;
+      } else if (lowerMessage.includes('phone')) {
+        newErrors.phoneNumber = errorMessage;
+      } else if (lowerMessage.includes('first name')) {
+        newErrors.firstName = errorMessage;
+      } else if (lowerMessage.includes('last name')) {
+        newErrors.lastName = errorMessage;
       } else {
         newErrors.general = errorMessage;
       }
@@ -133,10 +166,10 @@ export function HostLoginPage() {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-3xl md:text-4xl font-light text-white mb-4 tracking-tight">
-            Management Login
+            Create Your Account
           </h1>
           <p className="text-base text-zinc-500 font-light">
-            Log in to manage {companyName || 'your giveaways'}
+            Join {companyName || 'us'} and enter giveaways
           </p>
         </div>
 
@@ -149,6 +182,26 @@ export function HostLoginPage() {
             </div>
           )}
 
+          {/* First Name Input */}
+          <Input
+            label="First Name"
+            value={formData.firstName}
+            onChange={handleChange('firstName')}
+            error={errors.firstName}
+            placeholder="John"
+            required
+          />
+
+          {/* Last Name Input */}
+          <Input
+            label="Last Name"
+            value={formData.lastName}
+            onChange={handleChange('lastName')}
+            error={errors.lastName}
+            placeholder="Doe"
+            required
+          />
+
           {/* Email Input */}
           <Input
             label="Email Address"
@@ -157,6 +210,17 @@ export function HostLoginPage() {
             onChange={handleChange('email')}
             error={errors.email}
             placeholder="you@example.com"
+            required
+          />
+
+          {/* Phone Number Input */}
+          <Input
+            label="Phone Number"
+            type="tel"
+            value={formData.phoneNumber}
+            onChange={handleChange('phoneNumber')}
+            error={errors.phoneNumber}
+            placeholder="+1234567890"
             required
           />
 
@@ -171,6 +235,17 @@ export function HostLoginPage() {
             required
           />
 
+          {/* Confirm Password Input */}
+          <Input
+            label="Confirm Password"
+            type="password"
+            value={formData.confirmPassword}
+            onChange={handleChange('confirmPassword')}
+            error={errors.confirmPassword}
+            placeholder="••••••••"
+            required
+          />
+
           {/* Submit Button */}
           <Button
             type="submit"
@@ -181,18 +256,19 @@ export function HostLoginPage() {
             disabled={isLoading}
             useWhiteLabel
           >
-            Log In
+            Create Account
           </Button>
         </form>
 
-        {/* Back to Home Link */}
+        {/* Login Link */}
         <div className="mt-8 text-center">
           <p className="text-sm text-zinc-500 font-light">
+            Already have an account?{' '}
             <button
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/login')}
               className="text-white hover:text-zinc-300 transition-colors"
             >
-              ← Back to home
+              Log in
             </button>
           </p>
         </div>

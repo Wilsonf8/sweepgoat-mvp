@@ -38,17 +38,26 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Handle 401 Unauthorized errors
+    // Handle 401 Unauthorized errors ONLY if we're NOT on a login/auth page
     if (error.response?.status === 401) {
-      // Clear tokens and redirect to login
-      localStorage.removeItem('userToken');
-      localStorage.removeItem('hostToken');
+      const currentPath = window.location.pathname;
+      const isAuthPage = currentPath === '/login' ||
+                        currentPath === '/signup' ||
+                        currentPath === '/verify-email' ||
+                        currentPath.startsWith('/host/login');
 
-      // Determine if this is a host route
-      if (window.location.pathname.startsWith('/host')) {
-        window.location.href = '/host/login';
-      } else {
-        window.location.href = '/login';
+      // Only auto-redirect if NOT on an auth page (user session expired)
+      if (!isAuthPage) {
+        // Clear tokens and redirect to login
+        localStorage.removeItem('userToken');
+        localStorage.removeItem('hostToken');
+
+        // Determine if this is a host route
+        if (currentPath.startsWith('/host')) {
+          window.location.href = '/login'; // Redirect to login page
+        } else {
+          window.location.href = '/login';
+        }
       }
     }
 

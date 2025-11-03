@@ -30,11 +30,11 @@ public class EmailService {
     /**
      * Send welcome email after successful registration
      */
-    public void sendWelcomeEmail(String toEmail, String username) {
+    public void sendWelcomeEmail(String toEmail, String firstName) {
         logger.info("==================================================");
         logger.info("SENDING WELCOME EMAIL");
         logger.info("To: " + toEmail);
-        logger.info("Username: " + username);
+        logger.info("Name: " + firstName);
         logger.info("==================================================");
 
         // TODO: Implement actual email sending

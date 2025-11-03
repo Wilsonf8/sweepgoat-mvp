@@ -82,7 +82,6 @@ public class UserAuthService {
         User user = new User();
         user.setHost(host);
         user.setEmail(request.getEmail());
-        user.setUsername(request.getUsername());
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setPhoneNumber(request.getPhoneNumber());
@@ -161,7 +160,6 @@ public class UserAuthService {
             "USER",
             user.getId(),
             user.getEmail(),
-            user.getUsername(),
             host.getId(),
             host.getSubdomain()
         );
@@ -359,7 +357,6 @@ public class UserAuthService {
             .map(user -> new UserListResponse(
                 user.getId(),
                 user.getEmail(),
-                user.getUsername(),
                 user.getFirstName(),
                 user.getLastName(),
                 user.getPhoneNumber(),

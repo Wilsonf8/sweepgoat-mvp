@@ -41,11 +41,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmailAndHostId(String email, Long hostId);
 
-    Optional<User> findByUsernameAndHostId(String username, Long hostId);
-
     boolean existsByEmailAndHostId(String email, Long hostId);
-
-    boolean existsByUsernameAndHostId(String username, Long hostId);
 
     @Query("SELECT DISTINCT u FROM User u " +
             "LEFT JOIN GiveawayEntry ge ON ge.user.id = u.id " +

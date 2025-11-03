@@ -15,9 +15,6 @@ public class UserRegisterRequest {
     @Email(message = "Email should be valid")
     private String email;
 
-    @NotBlank(message = "Username is required")
-    private String username;
-
     @NotBlank(message = "Password is required")
     private String password;
 
