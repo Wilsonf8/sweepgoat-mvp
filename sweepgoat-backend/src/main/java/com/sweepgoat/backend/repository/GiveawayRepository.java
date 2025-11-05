@@ -17,6 +17,8 @@ public interface GiveawayRepository extends JpaRepository<Giveaway, Long> {
 
     Optional<Giveaway> findByIdAndHostId(Long id, Long hostId);
 
+    List<Giveaway> findByStatus(String status);
+
     List<Giveaway> findByHostIdAndStatus(Long hostId, String status);
 
     List<Giveaway> findByHostIdAndEndDateAfter(Long hostId, LocalDateTime date);

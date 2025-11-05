@@ -58,6 +58,7 @@ public class RootController {
         hostEndpoints.put("View Leaderboard", "GET /api/host/giveaways/{id}/entries");
         hostEndpoints.put("Create Giveaway", "POST /api/host/giveaways");
         hostEndpoints.put("Delete Giveaway", "DELETE /api/host/giveaways/{id}");
+        hostEndpoints.put("Upload Image", "POST /api/host/upload-image");
         hostEndpoints.put("View All Users (Paginated)", "GET /api/host/users?page={page}&size={size}&sortBy={field}&sortOrder={asc|desc}");
         hostEndpoints.put("Get Branding Settings", "GET /api/host/branding");
         hostEndpoints.put("Update Branding", "PATCH /api/host/branding");
@@ -85,6 +86,7 @@ public class RootController {
         notes.put("user_giveaway_history", "GET /api/user/my-giveaway-entries supports pagination (default: page=0, size=5). Returns giveaway history with status: ACTIVE, WON, or ENDED.");
         notes.put("branding", "PATCH /api/host/branding allows updating logoUrl and/or primaryColor (hex format). Default color: #FFFF00 (yellow)");
         notes.put("password_change", "POST /api/user/change-password and POST /api/host/change-password require currentPassword and newPassword (min 8 chars). New password must differ from current.");
+        notes.put("image_upload", "POST /api/host/upload-image accepts multipart/form-data with 'image' file (max 5MB, JPEG/PNG/WebP only). Returns Cloudflare Images URL.");
         response.put("notes", notes);
 
         return response;

@@ -22,8 +22,9 @@ export function HostDashboardPage() {
     const fetchActiveGiveaway = async () => {
       try {
         const response = await api.get('/api/host/giveaways/active');
-        if (response.data) {
-          setGiveaway(response.data);
+        // Backend returns an array, get the first active giveaway
+        if (response.data && response.data.length > 0) {
+          setGiveaway(response.data[0]);
         }
       } catch (error) {
         console.error('Error fetching active giveaway:', error);

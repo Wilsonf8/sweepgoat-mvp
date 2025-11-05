@@ -45,7 +45,7 @@ public class Giveaway {
     private LocalDateTime endDate;
 
     @Column(nullable = false)
-    private String status = "ACTIVE"; // ACTIVE, ENDED, CANCELLED
+    private String status = "ACTIVE"; // ACTIVE or ENDED (automatically updated by scheduler)
 
     @Column(name = "winner_id")
     private Long winnerId; // Null until winner is declared

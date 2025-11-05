@@ -20,9 +20,6 @@ public class CreateGiveawayRequest {
 
     private String imageUrl; // Cloudflare Images URL
 
-    @NotNull(message = "Start date is required")
-    private LocalDateTime startDate;
-
     @NotNull(message = "End date is required")
     private LocalDateTime endDate;
 }

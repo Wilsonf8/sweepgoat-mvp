@@ -166,18 +166,24 @@ export function HomePage() {
         <div className="container mx-auto px-4 md:px-6 lg:px-8 max-w-7xl py-8 md:py-20 lg:py-32">
           <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
             {/* Left: Giveaway Image */}
-            <div className="order-2 md:order-1">
-              <div className="rounded-lg overflow-hidden border border-zinc-800">
+            <div className="order-1 md:order-1">
+              <div className="rounded-lg overflow-hidden border border-zinc-800 bg-zinc-900">
                 <img
-                  src={giveaway.imageUrl}
+                  src={giveaway.imageUrl.replace(/\/(public|banner|thumbnail)$/, '/width=800,height=450,fit=cover')}
+                  srcSet={`
+                    ${giveaway.imageUrl.replace(/\/(public|banner|thumbnail)$/, '/width=600,height=337,fit=cover')} 600w,
+                    ${giveaway.imageUrl.replace(/\/(public|banner|thumbnail)$/, '/width=800,height=450,fit=cover')} 800w,
+                    ${giveaway.imageUrl.replace(/\/(public|banner|thumbnail)$/, '/width=1200,height=675,fit=cover')} 1200w
+                  `}
+                  sizes="(max-width: 768px) 600px, (max-width: 1024px) 800px, 1200px"
                   alt={giveaway.title}
-                  className="w-full h-auto aspect-square object-cover"
+                  className="w-full h-auto aspect-video object-cover"
                 />
               </div>
             </div>
 
             {/* Right: Giveaway Info */}
-            <div className="order-1 md:order-2">
+            <div className="order-2 md:order-2">
               <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-light text-white leading-tight tracking-tight mb-6 md:mb-8">
                 {giveaway.title}
               </h1>

@@ -143,6 +143,19 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * Handle file upload exceptions (400)
+     */
+    @ExceptionHandler(FileUploadException.class)
+    public ResponseEntity<Map<String, String>> handleFileUpload(
+            FileUploadException ex) {
+
+        Map<String, String> response = new HashMap<>();
+        response.put("error", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    /**
      * Handle validation errors from @Valid annotations (400)
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)

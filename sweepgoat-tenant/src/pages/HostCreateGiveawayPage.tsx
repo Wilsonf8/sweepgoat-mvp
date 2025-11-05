@@ -3,13 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '../components/DashboardLayout';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
+import { ImageUpload } from '../components/ImageUpload';
 import api from '../services/api';
 
 interface FormData {
   title: string;
   description: string;
   imageUrl: string;
-  startDate: string;
   endDate: string;
 }
 
@@ -17,7 +17,6 @@ interface FormErrors {
   title?: string;
   description?: string;
   imageUrl?: string;
-  startDate?: string;
   endDate?: string;
   general?: string;
 }
@@ -29,7 +28,6 @@ export function HostCreateGiveawayPage() {
     title: '',
     description: '',
     imageUrl: '',
-    startDate: '',
     endDate: '',
   });
 
@@ -59,20 +57,16 @@ export function HostCreateGiveawayPage() {
       newErrors.imageUrl = 'Image URL is required';
     }
 
-    if (!formData.startDate) {
-      newErrors.startDate = 'Start date is required';
-    }
-
     if (!formData.endDate) {
       newErrors.endDate = 'End date is required';
     }
 
-    // Validate end date is after start date
-    if (formData.startDate && formData.endDate) {
-      const start = new Date(formData.startDate);
+    // Validate end date is in the future
+    if (formData.endDate) {
       const end = new Date(formData.endDate);
-      if (end <= start) {
-        newErrors.endDate = 'End date must be after start date';
+      const now = new Date();
+      if (end <= now) {
+        newErrors.endDate = 'End date must be in the future';
       }
     }
 
@@ -95,7 +89,6 @@ export function HostCreateGiveawayPage() {
         title: formData.title,
         description: formData.description,
         imageUrl: formData.imageUrl,
-        startDate: formData.startDate,
         endDate: formData.endDate,
       });
 
@@ -173,57 +166,39 @@ export function HostCreateGiveawayPage() {
             )}
           </div>
 
-          {/* Image URL */}
-          <Input
-            label="Image URL"
-            value={formData.imageUrl}
-            onChange={handleChange('imageUrl')}
+          {/* Image Upload */}
+          <ImageUpload
+            onImageUploaded={(imageUrl) => {
+              setFormData((prev) => ({ ...prev, imageUrl }));
+              setErrors((prev) => ({ ...prev, imageUrl: undefined }));
+            }}
             error={errors.imageUrl}
-            placeholder="https://example.com/image.jpg"
-            required
           />
 
-          {/* Image Preview */}
+          {/* Uploaded Image Preview */}
           {formData.imageUrl && (
             <div className="w-full">
               <p className="text-xs font-light text-zinc-500 uppercase tracking-wider mb-2">
-                Preview
+                Uploaded Image
               </p>
-              <div className="w-full max-w-md border border-zinc-800 rounded-lg overflow-hidden">
+              <div className="w-full max-w-2xl border border-zinc-800 rounded-lg overflow-hidden">
                 <img
                   src={formData.imageUrl}
-                  alt="Preview"
+                  alt="Giveaway"
                   className="w-full h-auto"
-                  onError={(e) => {
-                    e.currentTarget.src = '';
-                    e.currentTarget.alt = 'Invalid image URL';
-                  }}
                 />
               </div>
             </div>
           )}
-
-          {/* Start Date */}
-          <div className="w-full">
-            <label className="block text-xs font-light text-zinc-500 uppercase tracking-wider mb-2">
-              Start Date & Time <span className="text-red-400">*</span>
-            </label>
-            <input
-              type="datetime-local"
-              value={formData.startDate}
-              onChange={(e) => handleChange('startDate')(e.target.value)}
-              className="w-full px-4 py-3 bg-zinc-900 border border-zinc-800 text-white text-sm font-light rounded focus:border-zinc-700 focus:outline-none"
-            />
-            {errors.startDate && (
-              <p className="text-xs text-red-400 mt-2">{errors.startDate}</p>
-            )}
-          </div>
 
           {/* End Date */}
           <div className="w-full">
             <label className="block text-xs font-light text-zinc-500 uppercase tracking-wider mb-2">
               End Date & Time <span className="text-red-400">*</span>
             </label>
+            <p className="text-xs text-zinc-600 font-light mb-2">
+              The giveaway will start immediately upon creation
+            </p>
             <input
               type="datetime-local"
               value={formData.endDate}

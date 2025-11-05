@@ -15,16 +15,17 @@ api.interceptors.request.use(
     // Add subdomain header to all requests
     const subdomain = getSubdomain();
     config.headers['X-Subdomain'] = subdomain;
+    console.log('API Request:', config.method?.toUpperCase(), config.url, 'X-Subdomain:', subdomain);
 
-    // Add auth token if available
-    // Check for both user and host tokens
-    const userToken = localStorage.getItem('userToken');
-    const hostToken = localStorage.getItem('hostToken');
+    // Add auth token based on the route being accessed
+    // Host routes (/api/host/*) use hostToken, everything else uses userToken
+    const isHostRoute = config.url?.includes('/api/host/');
+    const token = isHostRoute
+      ? localStorage.getItem('hostToken')
+      : localStorage.getItem('userToken');
 
-    if (userToken) {
-      config.headers.Authorization = `Bearer ${userToken}`;
-    } else if (hostToken) {
-      config.headers.Authorization = `Bearer ${hostToken}`;
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
 
     return config;

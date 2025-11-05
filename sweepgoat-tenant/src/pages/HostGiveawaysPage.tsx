@@ -30,8 +30,12 @@ export function HostGiveawaysPage() {
       try {
         const response = await api.get('/api/host/giveaways');
         setGiveaways(response.data);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error fetching giveaways:', error);
+        console.error('Error response data:', error.response?.data);
+        console.error('Error response status:', error.response?.status);
+        console.error('Error response headers:', error.response?.headers);
+        console.error('Full error object:', JSON.stringify(error, null, 2));
       } finally {
         setIsLoading(false);
       }

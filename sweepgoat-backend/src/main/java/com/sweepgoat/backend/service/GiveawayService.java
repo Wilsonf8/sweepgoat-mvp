@@ -5,6 +5,7 @@ import com.sweepgoat.backend.dto.GiveawayDetailsResponse;
 import com.sweepgoat.backend.dto.GiveawayListResponse;
 import com.sweepgoat.backend.dto.GiveawayStatsResponse;
 import com.sweepgoat.backend.dto.PaginatedResponse;
+import com.sweepgoat.backend.exception.DuplicateResourceException;
 import com.sweepgoat.backend.exception.ResourceNotFoundException;
 import com.sweepgoat.backend.model.Giveaway;
 import com.sweepgoat.backend.model.Host;
@@ -35,6 +36,7 @@ public class GiveawayService {
 
     /**
      * Get all active giveaways for a subdomain (PUBLIC - no auth required)
+     * Status is kept accurate by the scheduled GiveawayStatusScheduler
      */
     public List<GiveawayListResponse> getAllActiveGiveawaysBySubdomain(String subdomain) {
         // Find host by subdomain
@@ -42,13 +44,10 @@ public class GiveawayService {
             .orElseThrow(() -> new ResourceNotFoundException("Subdomain not found: " + subdomain));
 
         // Get all active giveaways for this host
+        // No need to filter by endDate - scheduler keeps status accurate
         List<Giveaway> giveaways = giveawayRepository.findByHostIdAndStatus(host.getId(), "ACTIVE");
 
-        // Filter to only show giveaways that haven't ended yet
-        LocalDateTime now = LocalDateTime.now();
-
         return giveaways.stream()
-            .filter(g -> g.getEndDate().isAfter(now))
             .map(this::mapToListResponse)
             .collect(Collectors.toList());
     }
@@ -147,6 +146,7 @@ public class GiveawayService {
 
     /**
      * Create a new giveaway (HOST auth required)
+     * Only one active giveaway is allowed per host at a time
      */
     @Transactional
     public GiveawayDetailsResponse createGiveaway(CreateGiveawayRequest request, Long hostId) {
@@ -154,13 +154,19 @@ public class GiveawayService {
         Host host = hostRepository.findById(hostId)
             .orElseThrow(() -> new ResourceNotFoundException("Host not found"));
 
+        // Check if host already has an active giveaway
+        List<Giveaway> activeGiveaways = giveawayRepository.findByHostIdAndStatus(hostId, "ACTIVE");
+        if (!activeGiveaways.isEmpty()) {
+            throw new DuplicateResourceException("You already have an active giveaway. Only one active giveaway allowed at a time.");
+        }
+
         // Create giveaway
         Giveaway giveaway = new Giveaway();
         giveaway.setHost(host);
         giveaway.setTitle(request.getTitle());
         giveaway.setDescription(request.getDescription());
         giveaway.setImageUrl(request.getImageUrl());
-        giveaway.setStartDate(request.getStartDate());
+        giveaway.setStartDate(LocalDateTime.now()); // Auto-set start time to now
         giveaway.setEndDate(request.getEndDate());
         giveaway.setStatus("ACTIVE");
 
