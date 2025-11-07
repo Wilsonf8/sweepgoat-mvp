@@ -39,6 +39,30 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Handle 403 Forbidden errors on protected routes
+    if (error.response?.status === 403) {
+      const requestUrl = error.config?.url || '';
+
+      // Check if this is a protected route (host or user routes)
+      const isProtectedRoute = requestUrl.includes('/api/host/') ||
+                              requestUrl.includes('/api/user/');
+
+      // If we get 403 on a protected route, redirect to homepage
+      // This handles both: wrong subdomain OR missing/invalid token
+      if (isProtectedRoute) {
+
+        // Clear all auth tokens
+        localStorage.removeItem('hostToken');
+        localStorage.removeItem('userToken');
+        localStorage.removeItem('userType');
+
+        // Redirect to homepage
+        window.location.href = '/';
+
+        return Promise.reject(new Error('Access denied - redirected to home'));
+      }
+    }
+
     // Handle 401 Unauthorized errors ONLY if we're NOT on a login/auth page
     if (error.response?.status === 401) {
       const currentPath = window.location.pathname;
