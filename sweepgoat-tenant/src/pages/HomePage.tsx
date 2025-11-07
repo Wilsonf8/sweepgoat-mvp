@@ -134,7 +134,11 @@ export function HomePage() {
               </p>
               <button
                 onClick={() => navigate('/previous-giveaways')}
-                className="bg-white text-black hover:bg-zinc-200 px-8 py-4 text-sm font-light rounded transition-all duration-300 cursor-pointer"
+                style={{
+                  backgroundColor: primaryColor,
+                  color: '#000000'
+                }}
+                className="hover:opacity-80 px-8 py-4 text-sm font-light rounded transition-all duration-300 cursor-pointer"
               >
                 View Previous Giveaways
               </button>

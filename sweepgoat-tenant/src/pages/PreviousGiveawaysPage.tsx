@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Navigation } from '../components/Navigation';
+import { useBranding } from '../context/BrandingContext';
 import api from '../services/api';
 
 interface Giveaway {
@@ -16,6 +17,7 @@ interface Giveaway {
 
 export function PreviousGiveawaysPage() {
   const navigate = useNavigate();
+  const { primaryColor } = useBranding();
   const [giveaways, setGiveaways] = useState<Giveaway[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
@@ -127,7 +129,11 @@ export function PreviousGiveawaysPage() {
               </p>
               <button
                 onClick={() => navigate('/')}
-                className="px-6 py-3 bg-white text-black hover:bg-zinc-200 rounded transition-colors font-light"
+                style={{
+                  backgroundColor: primaryColor,
+                  color: '#000000'
+                }}
+                className="px-6 py-3 hover:opacity-80 rounded transition-all font-light"
               >
                 Back to Home
               </button>

@@ -34,7 +34,7 @@ import java.util.Random;
 public class HostAuthService {
 
     private static final Logger logger = LoggerFactory.getLogger(HostAuthService.class);
-    private static final String DEFAULT_PRIMARY_COLOR = "#FFFF00"; // Yellow
+    private static final String DEFAULT_PRIMARY_COLOR = "#FFFFFF"; // White
     private static final int VERIFICATION_CODE_LENGTH = 6;
     private static final int VERIFICATION_CODE_EXPIRY_HOURS = 24;
 
