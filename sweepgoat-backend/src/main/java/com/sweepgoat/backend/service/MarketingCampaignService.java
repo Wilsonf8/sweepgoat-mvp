@@ -1,6 +1,9 @@
 package com.sweepgoat.backend.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sweepgoat.backend.dto.CampaignDetailResponse;
+import com.sweepgoat.backend.dto.CampaignListResponse;
+import com.sweepgoat.backend.dto.CampaignRecipientResponse;
 import com.sweepgoat.backend.dto.SendCampaignRequest;
 import com.sweepgoat.backend.dto.SendCampaignResponse;
 import com.sweepgoat.backend.dto.UserListResponse;
@@ -23,6 +26,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class MarketingCampaignService {
@@ -211,5 +215,95 @@ public class MarketingCampaignService {
             logger.error("Failed to build filters JSON: {}", e.getMessage());
             return "{}";
         }
+    }
+
+    /**
+     * Get all campaigns for a host (HOST auth required)
+     * Returns campaigns sorted by sentAt desc (most recent first)
+     */
+    public List<CampaignListResponse> getAllCampaigns(Long hostId) {
+        // Get all campaigns for this host
+        List<Campaign> campaigns = campaignRepository.findByHostId(hostId);
+
+        // Map to response DTOs and sort by sentAt desc
+        return campaigns.stream()
+            .map(this::mapToListResponse)
+            .sorted((c1, c2) -> {
+                // Sort by sentAt descending (most recent first)
+                // Handle null sentAt (drafts)
+                if (c1.getSentAt() == null && c2.getSentAt() == null) return 0;
+                if (c1.getSentAt() == null) return 1; // nulls last
+                if (c2.getSentAt() == null) return -1; // nulls last
+                return c2.getSentAt().compareTo(c1.getSentAt()); // desc
+            })
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Get campaign details with recipients (HOST auth required)
+     */
+    public CampaignDetailResponse getCampaignDetails(Long campaignId, Long hostId) {
+        // Get campaign and verify it belongs to this host
+        Campaign campaign = campaignRepository.findByIdAndHostId(campaignId, hostId)
+            .orElseThrow(() -> new ResourceNotFoundException("Campaign not found"));
+
+        // Get campaign logs (recipients)
+        List<CampaignLog> logs = campaignLogRepository.findByCampaignId(campaignId);
+
+        // Map logs to recipient responses
+        List<CampaignRecipientResponse> recipients = logs.stream()
+            .map(this::mapToRecipientResponse)
+            .collect(Collectors.toList());
+
+        // Build detail response
+        return new CampaignDetailResponse(
+            campaign.getId(),
+            campaign.getName(),
+            campaign.getType(),
+            campaign.getSubject(),
+            campaign.getMessage(),
+            campaign.getStatus(),
+            campaign.getTotalRecipients(),
+            campaign.getTotalSent(),
+            campaign.getTotalFailed(),
+            campaign.getSentAt(),
+            campaign.getCreatedAt(),
+            campaign.getFiltersJson(),
+            recipients
+        );
+    }
+
+    /**
+     * Map Campaign entity to CampaignListResponse DTO
+     */
+    private CampaignListResponse mapToListResponse(Campaign campaign) {
+        return new CampaignListResponse(
+            campaign.getId(),
+            campaign.getName(),
+            campaign.getType(),
+            campaign.getSubject(),
+            campaign.getStatus(),
+            campaign.getTotalRecipients(),
+            campaign.getTotalSent(),
+            campaign.getTotalFailed(),
+            campaign.getSentAt(),
+            campaign.getCreatedAt()
+        );
+    }
+
+    /**
+     * Map CampaignLog entity to CampaignRecipientResponse DTO
+     */
+    private CampaignRecipientResponse mapToRecipientResponse(CampaignLog log) {
+        User user = log.getUser();
+        return new CampaignRecipientResponse(
+            user.getId(),
+            user.getEmail(),
+            user.getFirstName(),
+            user.getLastName(),
+            log.getStatus(),
+            log.getSentAt(),
+            log.getErrorMessage()
+        );
     }
 }

@@ -125,6 +125,26 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * Handle subdomain mismatch during login (403)
+     * This occurs when a host attempts to log in from a subdomain
+     * that doesn't match their registered subdomain
+     */
+    @ExceptionHandler(SubdomainMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleSubdomainMismatch(
+            SubdomainMismatchException ex,
+            HttpServletRequest request) {
+
+        ErrorResponse error = new ErrorResponse(
+            HttpStatus.FORBIDDEN.value(),
+            "Subdomain Mismatch",
+            ex.getMessage(),
+            request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+    }
+
+    /**
      * Handle giveaway entry exceptions (400)
      */
     @ExceptionHandler(GiveawayEntryException.class)

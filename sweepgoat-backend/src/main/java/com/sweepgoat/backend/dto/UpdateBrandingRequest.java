@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UpdateBrandingRequest {
 
+    private String companyName; // Company name displayed on subdomain
+
     private String logoUrl; // Cloudflare Images URL
 
     @Pattern(regexp = "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",

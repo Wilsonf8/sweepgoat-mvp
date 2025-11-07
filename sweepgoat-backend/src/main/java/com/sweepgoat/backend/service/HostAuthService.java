@@ -101,10 +101,14 @@ public class HostAuthService {
     }
 
     /**
-     * Authenticate host login
-     * Throws EmailNotVerifiedException if email not verified
+     * Authenticate host login with subdomain validation
+     *
+     * @param request Login credentials (email + password)
+     * @param subdomain Subdomain from request (null if main domain)
+     * @throws EmailNotVerifiedException if email not verified
+     * @throws SubdomainMismatchException if attempting to log in from wrong subdomain
      */
-    public HostLoginResponse authenticateHost(HostLoginRequest request) {
+    public HostLoginResponse authenticateHost(HostLoginRequest request, String subdomain) {
         // Convert email to lowercase for consistency
         String emailLowercase = request.getEmail().toLowerCase().trim();
 
@@ -125,6 +129,19 @@ public class HostAuthService {
         // Check if email is verified
         if (!host.getEmailVerified()) {
             throw new EmailNotVerifiedException("Please verify your email to continue", host.getEmail());
+        }
+
+        // Validate subdomain matches host's registered subdomain
+        // Allow login from main domain (null/empty subdomain) for management purposes
+        if (subdomain != null && !subdomain.isEmpty()) {
+            if (!subdomain.equals(host.getSubdomain())) {
+                throw new com.sweepgoat.backend.exception.SubdomainMismatchException(
+                    String.format("Cannot log in from subdomain '%s'. Please log in from '%s.sweepgoat.com' or the main domain.",
+                        subdomain, host.getSubdomain()),
+                    subdomain,
+                    host.getSubdomain()
+                );
+            }
         }
 
         // Generate JWT token
@@ -273,7 +290,7 @@ public class HostAuthService {
     }
 
     /**
-     * Update host branding (logo and/or primary color)
+     * Update host branding (company name, logo, and/or primary color)
      * Validates logo URL accessibility if provided
      */
     @Transactional
@@ -281,6 +298,11 @@ public class HostAuthService {
         // Find host
         Host host = hostRepository.findById(hostId)
             .orElseThrow(() -> new ResourceNotFoundException("Host not found"));
+
+        // Update company name if provided
+        if (request.getCompanyName() != null && !request.getCompanyName().trim().isEmpty()) {
+            host.setCompanyName(request.getCompanyName().trim());
+        }
 
         // Update logo URL if provided
         if (request.getLogoUrl() != null) {

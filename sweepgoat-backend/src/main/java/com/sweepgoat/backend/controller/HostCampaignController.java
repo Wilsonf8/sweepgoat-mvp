@@ -1,5 +1,7 @@
 package com.sweepgoat.backend.controller;
 
+import com.sweepgoat.backend.dto.CampaignDetailResponse;
+import com.sweepgoat.backend.dto.CampaignListResponse;
 import com.sweepgoat.backend.dto.SendCampaignRequest;
 import com.sweepgoat.backend.dto.SendCampaignResponse;
 import com.sweepgoat.backend.service.MarketingCampaignService;
@@ -8,6 +10,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/host")
@@ -55,5 +59,45 @@ public class HostCampaignController {
         SendCampaignResponse response = marketingCampaignService.sendCampaign(request, hostId);
 
         return ResponseEntity.ok(response);
+    }
+
+    /**
+     * GET /api/host/campaigns
+     * Get all campaigns for the authenticated host
+     * Returns campaigns sorted by sentAt desc (most recent first)
+     */
+    @GetMapping("/campaigns")
+    public ResponseEntity<List<CampaignListResponse>> getAllCampaigns(HttpServletRequest httpRequest) {
+        // Extract hostId from JWT
+        Long hostId = (Long) httpRequest.getAttribute("hostId");
+
+        if (hostId == null) {
+            throw new RuntimeException("Authentication required");
+        }
+
+        List<CampaignListResponse> campaigns = marketingCampaignService.getAllCampaigns(hostId);
+
+        return ResponseEntity.ok(campaigns);
+    }
+
+    /**
+     * GET /api/host/campaigns/{id}
+     * Get campaign details including all recipients
+     */
+    @GetMapping("/campaigns/{id}")
+    public ResponseEntity<CampaignDetailResponse> getCampaignDetails(
+            @PathVariable Long id,
+            HttpServletRequest httpRequest) {
+
+        // Extract hostId from JWT
+        Long hostId = (Long) httpRequest.getAttribute("hostId");
+
+        if (hostId == null) {
+            throw new RuntimeException("Authentication required");
+        }
+
+        CampaignDetailResponse campaign = marketingCampaignService.getCampaignDetails(id, hostId);
+
+        return ResponseEntity.ok(campaign);
     }
 }

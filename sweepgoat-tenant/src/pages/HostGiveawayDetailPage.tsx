@@ -28,9 +28,13 @@ interface GiveawayStats {
 
 interface EntryUser {
   userId: number;
-  userName: string;
-  userEmail: string;
-  entryCount: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  points: number;
+  entryId: number;
+  freeEntryClaimed: boolean;
+  enteredAt: string;
 }
 
 export function HostGiveawayDetailPage() {
@@ -286,13 +290,13 @@ export function HostGiveawayDetailPage() {
                             #{index + 1}
                           </td>
                           <td className="px-6 py-4 text-sm font-light text-white">
-                            {entry.userName}
+                            {entry.firstName} {entry.lastName}
                           </td>
                           <td className="px-6 py-4 text-sm font-light text-zinc-400">
-                            {entry.userEmail}
+                            {entry.email}
                           </td>
                           <td className="px-6 py-4 text-sm font-light text-white text-right">
-                            {entry.entryCount}
+                            {entry.points}
                           </td>
                         </tr>
                       ))}

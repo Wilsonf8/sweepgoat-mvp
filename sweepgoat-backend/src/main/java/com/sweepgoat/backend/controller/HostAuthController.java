@@ -46,16 +46,26 @@ public class HostAuthController {
 
     /**
      * POST /api/auth/host/login
-     * Login as host (can be done from both main domain and subdomain)
-     * - Main domain (sweepgoat.com): Manage subdomains
-     * - Subdomain (host1.sweepgoat.com): Access CRM dashboard
+     * Login as host with subdomain validation
+     *
+     * Hosts can log in from:
+     * - Their own subdomain (e.g., acme host at acme.sweepgoat.com)
+     * - Main domain (sweepgoat.com) - for management/flexibility
+     *
+     * Hosts CANNOT log in from other hosts' subdomains (security)
+     *
      * Throws EmailNotVerifiedException if email not verified
+     * Throws SubdomainMismatchException if attempting to log in from wrong subdomain
      */
     @PostMapping("/login")
     public ResponseEntity<HostLoginResponse> login(
-            @Valid @RequestBody HostLoginRequest request) {
+            @Valid @RequestBody HostLoginRequest request,
+            HttpServletRequest httpRequest) {
 
-        HostLoginResponse response = hostAuthService.authenticateHost(request);
+        // Extract subdomain from request (null if main domain)
+        String subdomain = subdomainExtractor.extractSubdomain(httpRequest);
+
+        HostLoginResponse response = hostAuthService.authenticateHost(request, subdomain);
         return ResponseEntity.ok(response);
     }
 
