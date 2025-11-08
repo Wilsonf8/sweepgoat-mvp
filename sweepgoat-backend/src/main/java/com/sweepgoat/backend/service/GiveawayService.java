@@ -133,6 +133,9 @@ public class GiveawayService {
      * Map Giveaway entity to ListResponse DTO
      */
     private GiveawayListResponse mapToListResponse(Giveaway giveaway) {
+        // Count entries for this giveaway
+        Long totalEntries = giveawayEntryRepository.countEntriesByGiveawayId(giveaway.getId());
+
         return new GiveawayListResponse(
             giveaway.getId(),
             giveaway.getTitle(),
@@ -140,7 +143,8 @@ public class GiveawayService {
             giveaway.getImageUrl(),
             giveaway.getStartDate(),
             giveaway.getEndDate(),
-            giveaway.getStatus()
+            giveaway.getStatus(),
+            totalEntries
         );
     }
 

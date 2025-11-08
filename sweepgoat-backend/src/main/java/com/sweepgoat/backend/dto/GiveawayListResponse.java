@@ -21,4 +21,5 @@ public class GiveawayListResponse {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private String status; // ACTIVE, ENDED, CANCELLED
+    private Long totalEntries; // Total number of entries for this giveaway
 }

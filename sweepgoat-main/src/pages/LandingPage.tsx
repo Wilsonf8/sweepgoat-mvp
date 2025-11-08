@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Navigation } from '../components/Navigation';
 import { Section } from '../components/Section';
 import { Button } from '../components/Button';
+import { Slideshow } from '../components/Slideshow';
 
 export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
@@ -59,17 +60,17 @@ export const LandingPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Hero Visual/Screenshot Placeholder */}
+        {/* Hero Visual - Dashboard Preview Slideshow */}
         <div className="mt-24 max-w-5xl mx-auto">
           <div className="rounded-lg overflow-hidden bg-zinc-950 border border-zinc-800">
-            <div className="aspect-video bg-zinc-900 flex items-center justify-center">
-              <div className="text-center text-zinc-600">
-                <svg className="w-16 h-16 mx-auto mb-4 stroke-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <p className="text-sm font-light text-zinc-500">Dashboard Preview</p>
-              </div>
-            </div>
+            <Slideshow
+              images={[
+                'https://via.placeholder.com/1280x720/1a1a1a/666666?text=Dashboard+Preview+1',
+                'https://via.placeholder.com/1280x720/1a1a1a/666666?text=Dashboard+Preview+2',
+                'https://via.placeholder.com/1280x720/1a1a1a/666666?text=Dashboard+Preview+3',
+              ]}
+              interval={5000}
+            />
           </div>
         </div>
       </Section>
@@ -94,8 +95,8 @@ export const LandingPage: React.FC = () => {
             },
             {
               icon: <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>,
-              title: 'Your Subdomain',
-              description: 'Get your own branded subdomain like yourbrand.sweepgoat.com for a professional look.',
+              title: 'Your Sweepgoat Domain',
+              description: 'Get your own branded Sweepgoat domain for a professional look.',
             },
             {
               icon: <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>,
