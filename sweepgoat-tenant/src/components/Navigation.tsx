@@ -1,15 +1,22 @@
 import { useState } from 'react';
 import { useBranding } from '../context/BrandingContext';
-import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 
 export function Navigation() {
   const { companyName } = useBranding();
+  const { isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const isLoggedIn = !!localStorage.getItem('userToken');
-
   const closeMenu = () => setIsMenuOpen(false);
+
+  const handleLogout = () => {
+    logout();
+    closeMenu();
+    navigate('/');
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-sm border-b border-zinc-900">
@@ -30,7 +37,7 @@ export function Navigation() {
             >
               Previous Giveaways
             </Link>
-            {isLoggedIn && (
+            {isAuthenticated && (
               <>
                 <Link
                   to="/account"
@@ -44,9 +51,15 @@ export function Navigation() {
                 >
                   Settings
                 </Link>
+                <button
+                  onClick={handleLogout}
+                  className="text-xs font-light text-zinc-500 hover:text-white transition-colors uppercase tracking-wider"
+                >
+                  Logout
+                </button>
               </>
             )}
-            {!isLoggedIn && (
+            {!isAuthenticated && (
               <>
                 <Link
                   to="/signup"
@@ -89,7 +102,7 @@ export function Navigation() {
               >
                 Previous Giveaways
               </Link>
-              {isLoggedIn && (
+              {isAuthenticated && (
                 <>
                   <Link
                     to="/account"
@@ -105,9 +118,15 @@ export function Navigation() {
                   >
                     Settings
                   </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="text-sm font-light text-zinc-400 hover:text-white transition-colors uppercase tracking-wider py-2 text-left"
+                  >
+                    Logout
+                  </button>
                 </>
               )}
-              {!isLoggedIn && (
+              {!isAuthenticated && (
                 <>
                   <Link
                     to="/signup"

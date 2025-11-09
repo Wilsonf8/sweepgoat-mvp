@@ -5,6 +5,8 @@ import { PreviousGiveawaysPage } from './pages/PreviousGiveawaysPage';
 import { LoginPage } from './pages/LoginPage';
 import { SignupPage } from './pages/SignupPage';
 import { VerifyEmailPage } from './pages/VerifyEmailPage';
+import { AccountPage } from './pages/AccountPage';
+import { SettingsPage } from './pages/SettingsPage';
 import { HostLoginPage } from './pages/HostLoginPage';
 import { HostDashboardPage } from './pages/HostDashboardPage';
 import { HostGiveawaysPage } from './pages/HostGiveawaysPage';
@@ -15,9 +17,16 @@ import { HostCampaignsPage } from './pages/HostCampaignsPage';
 import { HostCampaignDetailPage } from './pages/HostCampaignDetailPage';
 import { HostSettingsPage } from './pages/HostSettingsPage';
 import { SubdomainNotFoundPage } from './pages/SubdomainNotFoundPage';
+import { PrivacyPage } from './pages/PrivacyPage';
+import { TermsPage } from './pages/TermsPage';
+import { GDPRCompliancePage } from './pages/GDPRCompliancePage';
+import { ContactPage } from './pages/ContactPage';
+import { FAQPage } from './pages/FAQPage';
+import { DocumentationPage } from './pages/DocumentationPage';
 import { validateSubdomain } from './services/subdomainService';
 import { getSubdomain } from './utils/subdomain';
 import { BrandingProvider } from './context/BrandingContext';
+import { AuthProvider } from './context/AuthContext';
 
 function App() {
   const [isValidating, setIsValidating] = useState(true);
@@ -90,29 +99,39 @@ function App() {
     return <SubdomainNotFoundPage />;
   }
 
-  // Normal app routing with BrandingProvider
+  // Normal app routing with BrandingProvider and AuthProvider
   return (
     <BrandingProvider
       companyName={brandingData.companyName}
       primaryColor={brandingData.primaryColor}
       subdomain={brandingData.subdomain}
     >
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/previous-giveaways" element={<PreviousGiveawaysPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
-        <Route path="/verify-email" element={<VerifyEmailPage />} />
-        <Route path="/host/login" element={<HostLoginPage />} />
-        <Route path="/host/dashboard" element={<HostDashboardPage />} />
-        <Route path="/host/giveaways" element={<HostGiveawaysPage />} />
-        <Route path="/host/giveaways/new" element={<HostCreateGiveawayPage />} />
-        <Route path="/host/giveaways/:id" element={<HostGiveawayDetailPage />} />
-        <Route path="/host/crm" element={<HostCRMPage />} />
-        <Route path="/host/campaigns" element={<HostCampaignsPage />} />
-        <Route path="/host/campaigns/:id" element={<HostCampaignDetailPage />} />
-        <Route path="/host/settings" element={<HostSettingsPage />} />
-      </Routes>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/previous-giveaways" element={<PreviousGiveawaysPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/verify-email" element={<VerifyEmailPage />} />
+          <Route path="/account" element={<AccountPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/gdpr" element={<GDPRCompliancePage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/faq" element={<FAQPage />} />
+          <Route path="/docs" element={<DocumentationPage />} />
+          <Route path="/host/login" element={<HostLoginPage />} />
+          <Route path="/host/dashboard" element={<HostDashboardPage />} />
+          <Route path="/host/giveaways" element={<HostGiveawaysPage />} />
+          <Route path="/host/giveaways/new" element={<HostCreateGiveawayPage />} />
+          <Route path="/host/giveaways/:id" element={<HostGiveawayDetailPage />} />
+          <Route path="/host/crm" element={<HostCRMPage />} />
+          <Route path="/host/campaigns" element={<HostCampaignsPage />} />
+          <Route path="/host/campaigns/:id" element={<HostCampaignDetailPage />} />
+          <Route path="/host/settings" element={<HostSettingsPage />} />
+        </Routes>
+      </AuthProvider>
     </BrandingProvider>
   );
 }

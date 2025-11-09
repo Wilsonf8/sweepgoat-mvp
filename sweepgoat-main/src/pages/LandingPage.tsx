@@ -252,9 +252,9 @@ export const LandingPage: React.FC = () => {
               The complete platform for running legal, branded giveaways.
             </p>
             <div className="flex items-center justify-center gap-6 text-sm">
-              <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
-              <a href="#" className="hover:text-white transition-colors">Contact</a>
+              <a href="/privacy" className="hover:text-white transition-colors">Privacy Policy</a>
+              <a href="/terms" className="hover:text-white transition-colors">Terms of Service</a>
+              <a href="/contact" className="hover:text-white transition-colors">Contact</a>
             </div>
             <p className="text-xs text-gray-500 mt-8">
               © 2025 Sweepgoat. All rights reserved.

@@ -133,7 +133,8 @@ public class HostAuthService {
 
         // Validate subdomain matches host's registered subdomain
         // Allow login from main domain (null/empty subdomain) for management purposes
-        if (subdomain != null && !subdomain.isEmpty()) {
+        // Also allow "localhost" as main domain for local development
+        if (subdomain != null && !subdomain.isEmpty() && !subdomain.equals("localhost")) {
             if (!subdomain.equals(host.getSubdomain())) {
                 throw new com.sweepgoat.backend.exception.SubdomainMismatchException(
                     String.format("Cannot log in from subdomain '%s'. Please log in from '%s.sweepgoat.com' or the main domain.",

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import { useBranding } from '../context/BrandingContext';
+import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 
 interface FormData {
@@ -19,6 +20,7 @@ interface FormErrors {
 export function LoginPage() {
   const navigate = useNavigate();
   const { companyName } = useBranding();
+  const { login } = useAuth();
 
   const [formData, setFormData] = useState<FormData>({
     email: '',
@@ -77,8 +79,14 @@ export function LoginPage() {
 
       // User login successful
       if ('token' in response.data) {
-        localStorage.setItem('userToken', response.data.token);
-        localStorage.setItem('userType', 'USER');
+        // Save user data to AuthContext and localStorage
+        const userData = {
+          userId: response.data.userId,
+          email: response.data.email,
+          firstName: response.data.firstName,
+          lastName: response.data.lastName,
+        };
+        login(userData, response.data.token);
         navigate('/'); // Redirect to home page
         return;
       }

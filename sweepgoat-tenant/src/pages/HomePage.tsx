@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Navigation } from '../components/Navigation';
 import { useBranding } from '../context/BrandingContext';
 import api from '../services/api';
+import { Footer } from '../components/Footer';
 
 interface Giveaway {
   id: number;
@@ -143,19 +144,9 @@ export function HomePage() {
                 View Previous Giveaways
               </button>
             </div>
-
-            {/* Management Button - Footer */}
-            <div className="border-t border-zinc-900 mt-20 md:mt-32 pt-8">
-              <div className="flex justify-center">
-                <button
-                  onClick={() => navigate('/host/login')}
-                  className="text-xs font-light text-zinc-600 hover:text-zinc-400 transition-colors uppercase tracking-wider"
-                >
-                  Management Login
-                </button>
-              </div>
-            </div>
           </div>
+
+          <Footer onManagementLoginClick={() => navigate('/host/login')} />
         </div>
       </>
     );
@@ -228,24 +219,14 @@ export function HomePage() {
                     color: '#000000'
                   }}
                 >
-                  {isLoggedIn ? 'Enter Now' : 'Login to Enter'}
+                  {isLoggedIn ? 'Enter Now' : 'Enter Now'}
                 </button>
               )}
             </div>
           </div>
         </div>
 
-        {/* Management Button - Footer */}
-        <div className="border-t border-zinc-900 mt-20 md:mt-32 pt-8">
-          <div className="flex justify-center">
-            <button
-              onClick={() => navigate('/host/login')}
-              className="text-xs font-light text-zinc-600 hover:text-zinc-400 transition-colors uppercase tracking-wider"
-            >
-              Management Login
-            </button>
-          </div>
-        </div>
+        <Footer onManagementLoginClick={() => navigate('/host/login')} />
       </div>
     </>
   );

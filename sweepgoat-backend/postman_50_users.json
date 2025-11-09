@@ -1,0 +1,459 @@
+{
+  "info": {
+    "name": "Create 50 Users for ACME Subdomain",
+    "description": "Collection to create 50 test users with realistic names for the ACME subdomain",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create User 1 - Emma Johnson",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"emma.johnson@example.com\",\"firstName\":\"Emma\",\"lastName\":\"Johnson\",\"phoneNumber\":\"555-0101\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 2 - Liam Williams",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"liam.williams@example.com\",\"firstName\":\"Liam\",\"lastName\":\"Williams\",\"phoneNumber\":\"555-0102\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 3 - Olivia Brown",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"olivia.brown@example.com\",\"firstName\":\"Olivia\",\"lastName\":\"Brown\",\"phoneNumber\":\"555-0103\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 4 - Noah Davis",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"noah.davis@example.com\",\"firstName\":\"Noah\",\"lastName\":\"Davis\",\"phoneNumber\":\"555-0104\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 5 - Ava Miller",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"ava.miller@example.com\",\"firstName\":\"Ava\",\"lastName\":\"Miller\",\"phoneNumber\":\"555-0105\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 6 - Ethan Wilson",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"ethan.wilson@example.com\",\"firstName\":\"Ethan\",\"lastName\":\"Wilson\",\"phoneNumber\":\"555-0106\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 7 - Sophia Moore",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"sophia.moore@example.com\",\"firstName\":\"Sophia\",\"lastName\":\"Moore\",\"phoneNumber\":\"555-0107\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 8 - Mason Taylor",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"mason.taylor@example.com\",\"firstName\":\"Mason\",\"lastName\":\"Taylor\",\"phoneNumber\":\"555-0108\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 9 - Isabella Anderson",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"isabella.anderson@example.com\",\"firstName\":\"Isabella\",\"lastName\":\"Anderson\",\"phoneNumber\":\"555-0109\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 10 - Lucas Thomas",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"lucas.thomas@example.com\",\"firstName\":\"Lucas\",\"lastName\":\"Thomas\",\"phoneNumber\":\"555-0110\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 11 - Mia Jackson",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"mia.jackson@example.com\",\"firstName\":\"Mia\",\"lastName\":\"Jackson\",\"phoneNumber\":\"555-0111\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 12 - James White",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"james.white@example.com\",\"firstName\":\"James\",\"lastName\":\"White\",\"phoneNumber\":\"555-0112\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 13 - Charlotte Harris",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"charlotte.harris@example.com\",\"firstName\":\"Charlotte\",\"lastName\":\"Harris\",\"phoneNumber\":\"555-0113\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 14 - Benjamin Martin",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"benjamin.martin@example.com\",\"firstName\":\"Benjamin\",\"lastName\":\"Martin\",\"phoneNumber\":\"555-0114\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 15 - Amelia Thompson",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"amelia.thompson@example.com\",\"firstName\":\"Amelia\",\"lastName\":\"Thompson\",\"phoneNumber\":\"555-0115\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 16 - Elijah Garcia",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"elijah.garcia@example.com\",\"firstName\":\"Elijah\",\"lastName\":\"Garcia\",\"phoneNumber\":\"555-0116\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 17 - Harper Martinez",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"harper.martinez@example.com\",\"firstName\":\"Harper\",\"lastName\":\"Martinez\",\"phoneNumber\":\"555-0117\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 18 - Alexander Robinson",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"alexander.robinson@example.com\",\"firstName\":\"Alexander\",\"lastName\":\"Robinson\",\"phoneNumber\":\"555-0118\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 19 - Evelyn Clark",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"evelyn.clark@example.com\",\"firstName\":\"Evelyn\",\"lastName\":\"Clark\",\"phoneNumber\":\"555-0119\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 20 - Henry Rodriguez",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"henry.rodriguez@example.com\",\"firstName\":\"Henry\",\"lastName\":\"Rodriguez\",\"phoneNumber\":\"555-0120\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 21 - Abigail Lewis",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"abigail.lewis@example.com\",\"firstName\":\"Abigail\",\"lastName\":\"Lewis\",\"phoneNumber\":\"555-0121\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 22 - Sebastian Lee",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"sebastian.lee@example.com\",\"firstName\":\"Sebastian\",\"lastName\":\"Lee\",\"phoneNumber\":\"555-0122\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 23 - Emily Walker",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"emily.walker@example.com\",\"firstName\":\"Emily\",\"lastName\":\"Walker\",\"phoneNumber\":\"555-0123\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 24 - Michael Hall",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"michael.hall@example.com\",\"firstName\":\"Michael\",\"lastName\":\"Hall\",\"phoneNumber\":\"555-0124\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 25 - Elizabeth Allen",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"elizabeth.allen@example.com\",\"firstName\":\"Elizabeth\",\"lastName\":\"Allen\",\"phoneNumber\":\"555-0125\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 26 - Daniel Young",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"daniel.young@example.com\",\"firstName\":\"Daniel\",\"lastName\":\"Young\",\"phoneNumber\":\"555-0126\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 27 - Sofia Hernandez",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"sofia.hernandez@example.com\",\"firstName\":\"Sofia\",\"lastName\":\"Hernandez\",\"phoneNumber\":\"555-0127\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 28 - Matthew King",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"matthew.king@example.com\",\"firstName\":\"Matthew\",\"lastName\":\"King\",\"phoneNumber\":\"555-0128\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 29 - Avery Wright",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"avery.wright@example.com\",\"firstName\":\"Avery\",\"lastName\":\"Wright\",\"phoneNumber\":\"555-0129\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 30 - Joseph Lopez",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"joseph.lopez@example.com\",\"firstName\":\"Joseph\",\"lastName\":\"Lopez\",\"phoneNumber\":\"555-0130\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 31 - Ella Hill",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"ella.hill@example.com\",\"firstName\":\"Ella\",\"lastName\":\"Hill\",\"phoneNumber\":\"555-0131\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 32 - David Scott",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"david.scott@example.com\",\"firstName\":\"David\",\"lastName\":\"Scott\",\"phoneNumber\":\"555-0132\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 33 - Scarlett Green",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"scarlett.green@example.com\",\"firstName\":\"Scarlett\",\"lastName\":\"Green\",\"phoneNumber\":\"555-0133\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 34 - Samuel Adams",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"samuel.adams@example.com\",\"firstName\":\"Samuel\",\"lastName\":\"Adams\",\"phoneNumber\":\"555-0134\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 35 - Victoria Baker",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"victoria.baker@example.com\",\"firstName\":\"Victoria\",\"lastName\":\"Baker\",\"phoneNumber\":\"555-0135\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 36 - Jackson Nelson",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"jackson.nelson@example.com\",\"firstName\":\"Jackson\",\"lastName\":\"Nelson\",\"phoneNumber\":\"555-0136\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 37 - Grace Carter",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"grace.carter@example.com\",\"firstName\":\"Grace\",\"lastName\":\"Carter\",\"phoneNumber\":\"555-0137\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 38 - Logan Mitchell",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"logan.mitchell@example.com\",\"firstName\":\"Logan\",\"lastName\":\"Mitchell\",\"phoneNumber\":\"555-0138\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 39 - Chloe Perez",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"chloe.perez@example.com\",\"firstName\":\"Chloe\",\"lastName\":\"Perez\",\"phoneNumber\":\"555-0139\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 40 - Owen Roberts",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"owen.roberts@example.com\",\"firstName\":\"Owen\",\"lastName\":\"Roberts\",\"phoneNumber\":\"555-0140\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 41 - Penelope Turner",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"penelope.turner@example.com\",\"firstName\":\"Penelope\",\"lastName\":\"Turner\",\"phoneNumber\":\"555-0141\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 42 - Jack Phillips",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"jack.phillips@example.com\",\"firstName\":\"Jack\",\"lastName\":\"Phillips\",\"phoneNumber\":\"555-0142\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 43 - Layla Campbell",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"layla.campbell@example.com\",\"firstName\":\"Layla\",\"lastName\":\"Campbell\",\"phoneNumber\":\"555-0143\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 44 - Luke Parker",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"luke.parker@example.com\",\"firstName\":\"Luke\",\"lastName\":\"Parker\",\"phoneNumber\":\"555-0144\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 45 - Riley Evans",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"riley.evans@example.com\",\"firstName\":\"Riley\",\"lastName\":\"Evans\",\"phoneNumber\":\"555-0145\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 46 - Ryan Edwards",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"ryan.edwards@example.com\",\"firstName\":\"Ryan\",\"lastName\":\"Edwards\",\"phoneNumber\":\"555-0146\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 47 - Zoey Collins",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"zoey.collins@example.com\",\"firstName\":\"Zoey\",\"lastName\":\"Collins\",\"phoneNumber\":\"555-0147\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 48 - Nathan Stewart",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"nathan.stewart@example.com\",\"firstName\":\"Nathan\",\"lastName\":\"Stewart\",\"phoneNumber\":\"555-0148\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 49 - Nora Sanchez",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"nora.sanchez@example.com\",\"firstName\":\"Nora\",\"lastName\":\"Sanchez\",\"phoneNumber\":\"555-0149\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    },
+    {
+      "name": "Create User 50 - Christian Morris",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "X-Subdomain", "value": "acme"}],
+        "body": {"mode": "raw", "raw": "{\"email\":\"christian.morris@example.com\",\"firstName\":\"Christian\",\"lastName\":\"Morris\",\"phoneNumber\":\"555-0150\",\"password\":\"Password123!\",\"emailOptIn\":false,\"smsOptIn\":false}"},
+        "url": {"raw": "http://localhost:8081/api/auth/user/register", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "auth", "user", "register"]}
+      }
+    }
+  ]
+}
