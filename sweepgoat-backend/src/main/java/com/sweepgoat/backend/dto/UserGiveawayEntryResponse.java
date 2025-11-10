@@ -11,8 +11,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class UserGiveawayEntryResponse {
     private Long giveawayId;
-    private String title;
-    private LocalDateTime endDate;
+    private String giveawayTitle;  // Changed from 'title' to match frontend expectation
+    private String giveawayImageUrl; // Added for frontend
+    private LocalDateTime giveawayEndDate;  // Changed from 'endDate' to match frontend expectation
+    private Integer points;  // Added - user's entry points
     private String status; // "ACTIVE", "WON", "ENDED"
-    private Long winnerId; // null if no winner selected yet
+    private Boolean freeEntryClaimed;  // Added for completeness
 }

@@ -45,10 +45,13 @@ public class Giveaway {
     private LocalDateTime endDate;
 
     @Column(nullable = false)
-    private String status = "ACTIVE"; // ACTIVE or ENDED (automatically updated by scheduler)
+    private String status = "ACTIVE"; // ACTIVE, ENDED, or COMPLETED (ENDED set by scheduler, COMPLETED when winner selected)
 
     @Column(name = "winner_id")
     private Long winnerId; // Null until winner is declared
+
+    @Column(name = "winner_selected_at")
+    private LocalDateTime winnerSelectedAt; // Timestamp when winner was selected
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

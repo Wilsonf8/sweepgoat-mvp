@@ -272,6 +272,18 @@ export function SignupPage() {
             </button>
           </p>
         </div>
+
+        {/* Back to Home Link */}
+        <div className="mt-4 text-center">
+          <p className="text-sm text-zinc-500 font-light">
+            <button
+              onClick={() => navigate('/')}
+              className="text-white hover:text-zinc-300 transition-colors"
+            >
+              ← Back to home
+            </button>
+          </p>
+        </div>
       </div>
     </div>
   );

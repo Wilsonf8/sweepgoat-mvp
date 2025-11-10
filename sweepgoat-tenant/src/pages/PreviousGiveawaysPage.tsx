@@ -10,7 +10,7 @@ interface Giveaway {
   description: string;
   imageUrl: string;
   endDate: string;
-  status: 'ENDED' | 'CANCELLED';
+  status: 'ENDED' | 'CANCELLED' | 'COMPLETED';
   winnerId?: number;
   winnerName?: string;
 }
@@ -45,9 +45,9 @@ export function PreviousGiveawaysPage() {
       // Response is a PaginatedResponse object
       const paginatedData = response.data;
 
-      // Filter to only ended/cancelled giveaways from the current page
+      // Filter to only ended/cancelled/completed giveaways from the current page
       const pastGiveaways = paginatedData.data.filter(
-        (g: Giveaway) => g.status === 'ENDED' || g.status === 'CANCELLED'
+        (g: Giveaway) => g.status === 'ENDED' || g.status === 'CANCELLED' || g.status === 'COMPLETED'
       );
 
       setGiveaways(pastGiveaways);
@@ -74,6 +74,13 @@ export function PreviousGiveawaysPage() {
       return (
         <span className="inline-block px-3 py-1 bg-zinc-700 text-zinc-300 rounded-full text-xs font-light">
           Ended
+        </span>
+      );
+    }
+    if (status === 'COMPLETED') {
+      return (
+        <span className="inline-block px-3 py-1 bg-yellow-500/10 text-yellow-400 rounded-full text-xs font-light border border-yellow-500">
+          Completed
         </span>
       );
     }
@@ -146,7 +153,8 @@ export function PreviousGiveawaysPage() {
               {giveaways.map((giveaway) => (
                 <div
                   key={giveaway.id}
-                  className="bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden hover:border-zinc-700 transition-colors"
+                  onClick={() => navigate(`/giveaways/${giveaway.id}`)}
+                  className="bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden hover:border-zinc-700 transition-colors cursor-pointer"
                 >
                   {/* Image */}
                   <div className="aspect-video bg-zinc-800 overflow-hidden">

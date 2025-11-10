@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { HomePage } from './pages/HomePage';
 import { PreviousGiveawaysPage } from './pages/PreviousGiveawaysPage';
+import { GiveawayDetailPage } from './pages/GiveawayDetailPage';
 import { LoginPage } from './pages/LoginPage';
 import { SignupPage } from './pages/SignupPage';
 import { VerifyEmailPage } from './pages/VerifyEmailPage';
@@ -110,6 +111,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/previous-giveaways" element={<PreviousGiveawaysPage />} />
+          <Route path="/giveaways/:id" element={<GiveawayDetailPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/verify-email" element={<VerifyEmailPage />} />

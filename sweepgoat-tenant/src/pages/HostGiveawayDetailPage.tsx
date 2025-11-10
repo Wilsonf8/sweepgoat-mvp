@@ -11,9 +11,22 @@ interface Giveaway {
   imageUrl: string;
   startDate: string;
   endDate: string;
-  status: 'ACTIVE' | 'ENDED' | 'CANCELLED';
+  status: 'ACTIVE' | 'ENDED' | 'COMPLETED' | 'CANCELLED';
   winnerId?: number;
   winnerName?: string;
+}
+
+interface WinnerSelectionResponse {
+  giveawayId: number;
+  giveawayTitle: string;
+  winnerId: number;
+  winnerEmail: string;
+  winnerFirstName: string;
+  winnerLastName: string;
+  winnerPhoneNumber: string;
+  winnerPoints: number;
+  selectedAt: string;
+  totalEntries: number;
 }
 
 interface GiveawayStats {
@@ -46,6 +59,9 @@ export function HostGiveawayDetailPage() {
   const [entries, setEntries] = useState<EntryUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [winner, setWinner] = useState<WinnerSelectionResponse | null>(null);
+  const [isSelecting, setIsSelecting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Fetch giveaway details
   useEffect(() => {
@@ -80,6 +96,45 @@ export function HostGiveawayDetailPage() {
     }
   };
 
+  // Handle select winner
+  const handleSelectWinner = async () => {
+    if (!giveaway) return;
+
+    // Confirm action
+    const confirmMessage =
+      giveaway.status === 'COMPLETED'
+        ? 'Are you sure you want to re-select a new winner? This will replace the current winner.'
+        : 'Are you sure you want to select a winner? This action will mark the giveaway as completed.';
+
+    if (!window.confirm(confirmMessage)) {
+      return;
+    }
+
+    setIsSelecting(true);
+    setError(null);
+
+    try {
+      const response = await api.post(`/api/host/giveaways/${giveaway.id}/select-winner`);
+      const winnerData = response.data;
+
+      setWinner(winnerData);
+
+      // Update giveaway status to COMPLETED
+      setGiveaway({
+        ...giveaway,
+        status: 'COMPLETED',
+      });
+
+      alert(`Winner selected: ${winnerData.winnerFirstName} ${winnerData.winnerLastName}`);
+    } catch (err: any) {
+      const errorMessage = err.response?.data?.message || 'Failed to select winner';
+      setError(errorMessage);
+      alert(errorMessage);
+    } finally {
+      setIsSelecting(false);
+    }
+  };
+
   // Format date
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -99,6 +154,8 @@ export function HostGiveawayDetailPage() {
         return 'bg-green-500/10 text-green-400 border-green-500';
       case 'ENDED':
         return 'bg-zinc-500/10 text-zinc-400 border-zinc-500';
+      case 'COMPLETED':
+        return 'bg-yellow-500/10 text-yellow-400 border-yellow-500';
       case 'CANCELLED':
         return 'bg-red-500/10 text-red-400 border-red-500';
       default:
@@ -250,6 +307,112 @@ export function HostGiveawayDetailPage() {
                 )}
               </div>
             </div>
+
+            {/* Winner Selection Section - Only show if ENDED and has entries */}
+            {giveaway.status === 'ENDED' && (stats?.totalEntries || 0) > 0 && (
+              <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+                <h2 className="text-xl font-light text-white mb-4">Select Winner</h2>
+                <p className="text-sm text-zinc-400 font-light mb-6">
+                  This giveaway has ended with {stats?.totalEntries || 0}{' '}
+                  {stats?.totalEntries === 1 ? 'entry' : 'entries'}. Click below to randomly
+                  select a winner.
+                </p>
+                <button
+                  onClick={handleSelectWinner}
+                  disabled={isSelecting}
+                  className="px-6 py-3 bg-white text-black font-light uppercase tracking-wider hover:bg-zinc-200 disabled:bg-zinc-700 disabled:text-zinc-500 transition-colors rounded"
+                >
+                  {isSelecting ? 'Selecting Winner...' : 'Select Winner'}
+                </button>
+              </div>
+            )}
+
+            {/* No Entries Message */}
+            {giveaway.status === 'ENDED' && (stats?.totalEntries || 0) === 0 && (
+              <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+                <h2 className="text-xl font-light text-white mb-4">No Entries</h2>
+                <p className="text-sm text-zinc-400 font-light">
+                  This giveaway has no entries. Winner selection is not available.
+                </p>
+              </div>
+            )}
+
+            {/* Winner Display Section */}
+            {giveaway.status === 'COMPLETED' && winner && (
+              <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-light text-white">Winner</h2>
+                  <button
+                    onClick={handleSelectWinner}
+                    disabled={isSelecting}
+                    className="px-4 py-2 border border-zinc-500 text-zinc-300 font-light uppercase tracking-wider hover:bg-zinc-800 disabled:opacity-50 transition-colors rounded text-sm"
+                  >
+                    {isSelecting ? 'Re-selecting...' : 'Re-select Winner'}
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex flex-col md:flex-row md:items-center">
+                    <span className="text-sm text-zinc-500 font-light uppercase tracking-wider md:w-40">
+                      Name
+                    </span>
+                    <span className="text-base text-white font-light">
+                      {winner.winnerFirstName} {winner.winnerLastName}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col md:flex-row md:items-center">
+                    <span className="text-sm text-zinc-500 font-light uppercase tracking-wider md:w-40">
+                      Email
+                    </span>
+                    <span className="text-base text-white font-light">
+                      {winner.winnerEmail}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col md:flex-row md:items-center">
+                    <span className="text-sm text-zinc-500 font-light uppercase tracking-wider md:w-40">
+                      Phone
+                    </span>
+                    <span className="text-base text-white font-light">
+                      {winner.winnerPhoneNumber}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col md:flex-row md:items-center">
+                    <span className="text-sm text-zinc-500 font-light uppercase tracking-wider md:w-40">
+                      Points
+                    </span>
+                    <span className="text-base text-white font-light">{winner.winnerPoints}</span>
+                  </div>
+
+                  <div className="flex flex-col md:flex-row md:items-center">
+                    <span className="text-sm text-zinc-500 font-light uppercase tracking-wider md:w-40">
+                      Selected
+                    </span>
+                    <span className="text-base text-white font-light">
+                      {formatDate(winner.selectedAt)}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col md:flex-row md:items-center">
+                    <span className="text-sm text-zinc-500 font-light uppercase tracking-wider md:w-40">
+                      Total Entries
+                    </span>
+                    <span className="text-base text-white font-light">
+                      {winner.totalEntries}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Error Display */}
+            {error && (
+              <div className="bg-red-500/10 border border-red-500 rounded-lg p-4">
+                <p className="text-sm text-red-400 font-light">{error}</p>
+              </div>
+            )}
 
             {/* Leaderboard */}
             <div className="bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden">

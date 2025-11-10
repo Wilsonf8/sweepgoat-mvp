@@ -6,6 +6,7 @@ import com.sweepgoat.backend.dto.GiveawayEntryLeaderboardResponse;
 import com.sweepgoat.backend.dto.GiveawayListResponse;
 import com.sweepgoat.backend.dto.GiveawayStatsResponse;
 import com.sweepgoat.backend.dto.MessageResponse;
+import com.sweepgoat.backend.dto.WinnerSelectionResponse;
 import com.sweepgoat.backend.service.GiveawayEntryService;
 import com.sweepgoat.backend.service.GiveawayService;
 import com.sweepgoat.backend.service.HostAuthService;
@@ -164,5 +165,27 @@ public class HostGiveawayController {
         giveawayService.deleteGiveaway(id, hostId);
 
         return ResponseEntity.ok(new MessageResponse("Giveaway deleted successfully"));
+    }
+
+    /**
+     * POST /api/host/giveaways/{id}/select-winner
+     * Randomly select a winner for a giveaway that has ended
+     * Uses SecureRandom to ensure fair selection
+     * Allows re-selection if a winner was already chosen
+     */
+    @PostMapping("/{id}/select-winner")
+    public ResponseEntity<WinnerSelectionResponse> selectWinner(
+            @PathVariable Long id,
+            HttpServletRequest request) {
+
+        Long hostId = (Long) request.getAttribute("hostId");
+
+        if (hostId == null) {
+            throw new RuntimeException("Authentication required");
+        }
+
+        WinnerSelectionResponse winner = giveawayService.selectWinner(id, hostId);
+
+        return ResponseEntity.ok(winner);
     }
 }

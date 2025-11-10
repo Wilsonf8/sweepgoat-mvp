@@ -5,25 +5,34 @@ import com.sweepgoat.backend.dto.GiveawayDetailsResponse;
 import com.sweepgoat.backend.dto.GiveawayListResponse;
 import com.sweepgoat.backend.dto.GiveawayStatsResponse;
 import com.sweepgoat.backend.dto.PaginatedResponse;
+import com.sweepgoat.backend.dto.WinnerSelectionResponse;
 import com.sweepgoat.backend.exception.DuplicateResourceException;
+import com.sweepgoat.backend.exception.GiveawayEntryException;
 import com.sweepgoat.backend.exception.ResourceNotFoundException;
 import com.sweepgoat.backend.model.Giveaway;
+import com.sweepgoat.backend.model.GiveawayEntry;
 import com.sweepgoat.backend.model.Host;
+import com.sweepgoat.backend.model.User;
 import com.sweepgoat.backend.repository.GiveawayEntryRepository;
 import com.sweepgoat.backend.repository.GiveawayRepository;
 import com.sweepgoat.backend.repository.HostRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class GiveawayService {
+
+    private static final Logger logger = LoggerFactory.getLogger(GiveawayService.class);
 
     @Autowired
     private GiveawayRepository giveawayRepository;
@@ -209,6 +218,72 @@ public class GiveawayService {
 
         // Now delete the giveaway
         giveawayRepository.delete(giveaway);
+    }
+
+    /**
+     * Select a random winner for a giveaway (HOST auth required)
+     * Uses SecureRandom to randomly select one entry from all entries
+     * Allows re-selection if winner already exists
+     */
+    @Transactional
+    public WinnerSelectionResponse selectWinner(Long giveawayId, Long hostId) {
+        // 1. Find and validate giveaway exists
+        Giveaway giveaway = giveawayRepository.findById(giveawayId)
+            .orElseThrow(() -> new ResourceNotFoundException("Giveaway not found"));
+
+        // 2. Verify giveaway belongs to this host
+        if (!giveaway.getHost().getId().equals(hostId)) {
+            throw new ResourceNotFoundException("Giveaway not found");
+        }
+
+        // 3. Validate giveaway status - must be ENDED or COMPLETED
+        if ("ACTIVE".equals(giveaway.getStatus())) {
+            throw new GiveawayEntryException("Cannot select winner for an active giveaway. Wait for the giveaway to end.");
+        }
+
+        // 4. Get all entries for this giveaway
+        List<GiveawayEntry> entries = giveawayEntryRepository.findByGiveawayId(giveawayId);
+
+        if (entries.isEmpty()) {
+            throw new GiveawayEntryException("No entries found for this giveaway. Cannot select a winner.");
+        }
+
+        // 5. Use SecureRandom to select a random entry
+        SecureRandom secureRandom = new SecureRandom();
+        int winnerIndex = secureRandom.nextInt(entries.size());
+        GiveawayEntry winningEntry = entries.get(winnerIndex);
+        User winner = winningEntry.getUser();
+
+        // 6. Update giveaway with winner information
+        giveaway.setWinnerId(winner.getId());
+        giveaway.setStatus("COMPLETED");
+        giveaway.setWinnerSelectedAt(LocalDateTime.now());
+        giveawayRepository.save(giveaway);
+
+        // 7. Log the winner selection for audit trail
+        logger.info("Winner selected for giveaway '{}' (ID: {}): User '{}' (ID: {}, Email: {}) with {} points. Selected from {} total entries.",
+            giveaway.getTitle(),
+            giveaway.getId(),
+            winner.getFirstName() + " " + winner.getLastName(),
+            winner.getId(),
+            winner.getEmail(),
+            winningEntry.getPoints(),
+            entries.size()
+        );
+
+        // 8. Return winner details
+        return new WinnerSelectionResponse(
+            giveaway.getId(),
+            giveaway.getTitle(),
+            winner.getId(),
+            winner.getEmail(),
+            winner.getFirstName(),
+            winner.getLastName(),
+            winner.getPhoneNumber(),
+            winningEntry.getPoints(),
+            giveaway.getWinnerSelectedAt(),
+            entries.size()
+        );
     }
 
     /**

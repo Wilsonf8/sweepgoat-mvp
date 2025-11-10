@@ -160,6 +160,8 @@ public class UserAuthService {
             "USER",
             user.getId(),
             user.getEmail(),
+            user.getFirstName(),
+            user.getLastName(),
             host.getId(),
             host.getSubdomain()
         );

@@ -30,7 +30,7 @@ export const LandingPage: React.FC = () => {
 
           {/* Main Headline */}
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-light text-white mb-8 leading-tight tracking-tight">
-            Run Legal Giveaways
+            Run Giveaways
             <br />
             <span className="font-normal">Under Your Brand</span>
           </h1>
@@ -45,9 +45,9 @@ export const LandingPage: React.FC = () => {
             <Button variant="primary" size="lg" onClick={handleSignUpClick}>
               Start Free Trial
             </Button>
-            <Button variant="outline" size="lg">
+            {/* <Button variant="outline" size="lg">
               Watch Demo
-            </Button>
+            </Button> */}
           </div>
 
           {/* Trust Indicators */}
@@ -65,9 +65,9 @@ export const LandingPage: React.FC = () => {
           <div className="rounded-lg overflow-hidden bg-zinc-950 border border-zinc-800">
             <Slideshow
               images={[
-                'https://via.placeholder.com/1280x720/1a1a1a/666666?text=Dashboard+Preview+1',
-                'https://via.placeholder.com/1280x720/1a1a1a/666666?text=Dashboard+Preview+2',
-                'https://via.placeholder.com/1280x720/1a1a1a/666666?text=Dashboard+Preview+3',
+                'https://imagedelivery.net/BWNKrb2aS9vOshktaQIVYQ/fc714372-a5a5-4988-5bd1-b4025d401200/public',
+                'https://imagedelivery.net/BWNKrb2aS9vOshktaQIVYQ/cdff391a-f568-4775-0098-ee1f59f60300/public',
+                'https://imagedelivery.net/BWNKrb2aS9vOshktaQIVYQ/8037fd86-5d13-4448-e107-845f5b81d600/public',
               ]}
               interval={5000}
             />
@@ -193,9 +193,9 @@ export const LandingPage: React.FC = () => {
             <Button variant="primary" size="lg" onClick={handleSignUpClick}>
               Start Free Trial
             </Button>
-            <Button variant="outline" size="lg">
+            {/* <Button variant="outline" size="lg">
               Schedule a Demo
-            </Button>
+            </Button> */}
           </div>
         </div>
       </Section>

@@ -13,6 +13,8 @@ public class UserLoginResponse {
     private String userType; // "USER"
     private Long userId;
     private String email;
+    private String firstName;
+    private String lastName;
     private Long hostId;
     private String subdomain;
 }

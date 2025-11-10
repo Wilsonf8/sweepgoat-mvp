@@ -327,7 +327,7 @@ public class GiveawayEntryService {
         // Determine status
         if ("ACTIVE".equals(giveaway.getStatus())) {
             status = "ACTIVE";
-        } else if ("ENDED".equals(giveaway.getStatus()) || "CANCELLED".equals(giveaway.getStatus())) {
+        } else if ("ENDED".equals(giveaway.getStatus()) || "COMPLETED".equals(giveaway.getStatus()) || "CANCELLED".equals(giveaway.getStatus())) {
             // Check if user won this giveaway
             if (winnerId != null && winnerId.equals(entry.getUser().getId())) {
                 status = "WON";
@@ -341,9 +341,11 @@ public class GiveawayEntryService {
         return new UserGiveawayEntryResponse(
             giveaway.getId(),
             giveaway.getTitle(),
+            giveaway.getImageUrl(),
             giveaway.getEndDate(),
+            entry.getPoints(),
             status,
-            winnerId
+            entry.getFreeEntryClaimed()
         );
     }
 
